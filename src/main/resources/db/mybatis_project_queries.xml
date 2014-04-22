@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nz.ac.auckland.cer.jobaudit.project">
+
+  <select id="isCurrentUserAdviser" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT COUNT(*)
+    FROM adviser_properties 
+    WHERE propname = 'DN' AND 
+          propvalue LIKE #{sharedToken}
+  </select>	
+
+  <select id="getProjectCodes" resultType="java.lang.String">
+    SELECT DISTINCT
+      projectCode
+    FROM project
+    WHERE
+      projectCode LIKE 'nesi%' OR
+      projectCode LIKE 'uoa%' OR
+      projectCode LIKE 'uoo%' OR
+      projectCode LIKE 'landcare%'
+    ORDER BY projectCode
+  </select>
+   
+  <select id="getResearcherIdForSharedToken" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT researcherId as id
+    FROM researcher_properties
+    WHERE propname = 'DN' AND
+          propvalue LIKE #{sharedToken}
+  </select>
+	
+  <select id="getProjectCodesForSharedToken" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT projectCode
+    FROM project 
+    INNER JOIN researcher_project 
+    ON researcher_project.projectId = project.id AND 
+       researcher_project.researcherId = (
+         SELECT researcherId 
+         FROM researcher_properties 
+         WHERE propname='DN' AND 
+               propvalue LIKE #{sharedToken}
+       )
+    WHERE hostInstitution = 'University of Auckland'
+    ORDER BY projectCode
+  </select>
+	
+  <select id="getResearcherAccountNamesForSharedToken" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT DISTINCT propvalue AS linuxUsername 
+    FROM researcher_properties
+    WHERE propname = 'linuxUsername' AND
+          researcherId IN ( 
+            SELECT researcherId 
+            FROM researcher_properties
+            WHERE propname = 'DN' AND
+                  propvalue LIKE #{sharedToken}
+          )
+  </select>	
+
+  <select id="getResearcherOrAdviserAccountNamesForSharedToken" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT linuxUsername
+    FROM
+    (  
+       SELECT DISTINCT propvalue AS linuxUsername 
+       FROM researcher_properties
+       WHERE propname = 'linuxUsername' AND
+             researcherId IN ( 
+               SELECT researcherId 
+               FROM researcher_properties
+               WHERE propname = 'DN' AND
+                     propvalue LIKE #{sharedToken}
+             )
+         
+       UNION
+         
+       SELECT DISTINCT propvalue AS linuxUsername 
+       FROM adviser_properties
+       WHERE propname = 'linuxUsername' AND
+             adviserId IN ( 
+               SELECT adviserId 
+               FROM adviser_properties
+               WHERE propname = 'DN' AND
+                     propvalue LIKE #{sharedToken}
+             )
+    ) DERIVED  
+  </select>	
+	
+</mapper>

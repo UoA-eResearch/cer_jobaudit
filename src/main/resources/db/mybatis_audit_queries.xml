@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nz.ac.auckland.cer.jobaudit.audit">
+
+  <!-- get list of users that submitted at least 1 job -->
+  <select id="getUsersWithAtLeastOneJob"  resultType="java.lang.String">
+    SELECT DISTINCT
+      user
+    FROM audit
+  </select>
+   
+  <!-- get list of users that submitted at least 1 job in the specified time interval -->
+  <!-- using audit table leads to some improper usage of indices when running the query  -->
+  <!-- (ignore index(user_index) improves the performance, but using audit_user gives the results quicker) -->
+  <!-- FIXME: this doesn't do what it's supposed to do -->
+  <select id="getAccountNamesWithAtLeastOneJobInterval" parameterType="java.util.Map" resultType="java.lang.String">
+    SELECT DISTINCT
+      user
+    FROM audit
+  </select>
+
+  <!-- get information about user -->
+  <select id="getUser" parameterType="java.lang.String" resultType="nz.ac.auckland.cer.jobaudit.pojo.User">
+    SELECT DISTINCT
+      usermap.id AS id,
+      usermap.name AS name,
+      usermap.email AS email,
+      affiliation.code AS affiliation
+    FROM usermap, affiliation
+    WHERE
+      usermap.id = affiliation.id AND
+      usermap.id = #{accountName}
+  </select>
+
+  <!-- get list of all possible affilations -->
+  <select id="getAffiliations" resultType="nz.ac.auckland.cer.jobaudit.pojo.Affiliation">
+    SELECT DISTINCT
+      code, 
+      dept1, 
+      dept2
+    FROM affiliation
+  </select>
+
+  <select id="getAccountNamesForProject" parameterType="java.lang.String"  resultType="java.lang.String">
+    SELECT DISTINCT
+      user
+    FROM
+      audit
+    WHERE 
+      account = #{project}
+  </select>
+
+  <!-- get users with a certain code -->
+  <select id="getAccountNamesForAffiliationCode" parameterType="java.lang.String"  resultType="java.lang.String">
+    SELECT
+      id
+    FROM affiliation
+    WHERE
+      code = #{code}
+  </select>
+
+  <select id="getAccountNamesForAffiliationCodeAndDept1" parameterType="java.util.Map"  resultType="java.lang.String">
+    SELECT
+      id
+    FROM affiliation
+    WHERE
+     code = #{code} AND
+     dept1 = #{dept1}
+  </select>
+
+  <select id="getAccountNamesForAffiliationCodeAndDept1AndDept2" parameterType="java.util.Map" resultType="java.lang.String">
+    SELECT
+      id
+    FROM affiliation
+    WHERE
+      code = #{code} AND
+      dept1 = #{dept1} AND
+      dept2 = #{dept2}
+  </select>
+
+  <!-- get number of jobs submitted by a user -->
+  <select id="getNumberAuditRecordsOfAccountName" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT
+      COUNT(user)
+    FROM audit
+    WHERE
+      user = #{accountName}
+  </select>
+   
+  <!-- get audit records of a user -->
+  <select id="getAuditRecordsOfUser" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.AuditRecord">
+    SELECT 
+      account,
+      appstatus,
+      cores,
+      executable,
+      jobgroup,
+      jobid,
+      jobname,
+      jobtype,
+      nodes,
+      processors,
+      queue,
+      status,
+      user,
+      walltime,
+      iwd AS workingdir,
+      mem/1024 AS mem,
+      vmem/1024 AS vmem,
+      memrequested/1024 AS memrequested,
+      IF(qtime>0, FROM_UNIXTIME(qtime, '%Y/%m/%d %H:%i:%s'), 'N/A') AS qtime,
+      IF(start>0, FROM_UNIXTIME(start, '%Y/%m/%d %H:%i:%s'), 'N/A') AS start,
+      IF(done>0, FROM_UNIXTIME(done, '%Y/%m/%d %H:%i:%s'), 'N/A') AS done,
+      (done-start)*cores AS coretime,
+      ROUND((utilisation/((done-start)*cores)) * 100) AS efficacy,
+      IF((flags <![CDATA[ & ]]> 262144) = 0, 'yes', 'no') AS shared
+    FROM audit
+    WHERE
+      user = #{accountName}
+    ORDER BY ${orderby} ${sortorder}
+    LIMIT #{offset},#{amount}
+  </select>
+
+  <select id="getStatisticsForAccountNames" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.UserStatistics">
+    SELECT
+      user,
+      SUM(jobs) AS jobs,
+      SUM(grid_jobs) AS grid_jobs,
+      SUM(total_cores) AS total_cores,
+      TRUNCATE(SUM(core_hours),2) AS total_core_hours,
+      TRUNCATE(SUM(total_grid_core_hours),2) AS total_grid_core_hours,
+      TRUNCATE(SUM(waiting_time),2) AS total_waiting_time,
+      (SUM(waiting_time)/SUM(jobs)) AS average_waiting_time 
+    FROM audit_user_prev 
+    WHERE
+      CONCAT_WS('', year, month) between #{bottom} AND #{top} AND
+      user IN <foreach collection="accountNames" item="a" open="(" separator="," close=")">#{a}</foreach>
+    GROUP BY user
+  </select> 
+   
+  <select id="getStatisticsForAccountNamesLatest" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.UserStatistics">
+    SELECT 
+      user ,
+      SUM(jobs) AS jobs,
+      SUM(grid_jobs) AS grid_jobs,
+        SUM(total_cores) AS total_cores,
+        TRUNCATE(SUM(total_core_hours),2) AS total_core_hours,
+        TRUNCATE(SUM(total_grid_core_hours),2) AS total_grid_core_hours,
+        TRUNCATE(SUM(total_waiting_time),2) AS total_waiting_time,
+        AVG(average_waiting_time) AS average_waiting_time
+      FROM
+      (
+        SELECT
+          user,
+          SUM(jobs) AS jobs,
+          SUM(grid_jobs) AS grid_jobs,
+          SUM(total_cores) AS total_cores,
+          SUM(core_hours) AS total_core_hours,
+          SUM(total_grid_core_hours) AS total_grid_core_hours,
+          SUM(waiting_time) AS total_waiting_time,
+          (SUM(waiting_time)/SUM(jobs)) AS average_waiting_time
+        FROM audit_user_prev 
+        WHERE 
+          CONCAT_WS('', year, month) BETWEEN #{start} AND #{end}
+          GROUP BY user      
+       
+        UNION
+      
+        SELECT
+          user, 
+          COUNT(*) AS jobs,
+          SUM(IF(executable LIKE '%.globus%', 1, 0)) AS grid_jobs,
+          SUM(cores) AS total_cores,
+          TRUNCATE(SUM(core_hours), 2) AS total_core_hours,
+          TRUNCATE(SUM(IF(executable LIKE '%.globus%', core_hours, 0)), 2) AS total_grid_core_hours,
+          TRUNCATE(SUM(waiting_time), 2) AS total_waiting_time,
+          TRUNCATE(avg(waiting_time), 2) AS average_waiting_time
+        FROM audit_user
+        WHERE 
+          done <![CDATA[ >= ]]> #{bottom} AND
+          done <![CDATA[ < ]]> #{mid} 
+        GROUP BY user
+        
+        UNION
+         
+        SELECT
+          user,
+          COUNT(*) AS jobs,
+          SUM(IF(executable LIKE '%.globus%', 1, 0)) AS grid_jobs,
+          SUM(cores) AS total_cores,
+          TRUNCATE(SUM(IF(done>start, cores*(done-start), 0))/3600, 2) AS total_core_hours,
+          TRUNCATE(SUM(IF(done>start, IF(executable LIKE '%.globus%', cores*(done-start), 0),0))/3600, 2) AS total_grid_core_hours,
+          TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600, 2) AS total_waiting_time,
+          TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600/count(*), 2) AS average_waiting_time
+        FROM audit
+        WHERE 
+          done <![CDATA[ >= ]]> #{mid} AND
+          done <![CDATA[ <= ]]> #{top}
+        GROUP BY user 
+      ) DERIVED
+      
+    WHERE
+      user IN <foreach collection="accountNames" item="a" open="(" separator="," close=")">#{a}</foreach>
+    GROUP BY user
+  </select>   
+
+  <select id="getStatisticsForProject" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.UserStatistics">
+    SELECT 
+      user,
+      SUM(jobs) AS jobs,
+      SUM(grid_jobs) AS grid_jobs,
+      SUM(total_grid_core_hours) AS total_grid_core_hours,
+      SUM(total_cores) AS total_cores,
+      TRUNCATE(SUM(core_hours),2) AS total_core_hours,
+      TRUNCATE(SUM(waiting_time),2) AS total_waiting_time,
+      (SUM(waiting_time)/SUM(jobs)) AS average_waiting_time 
+    FROM audit_project_prev 
+    WHERE 
+      CONCAT_WS('', year, month) BETWEEN #{bottom} AND #{top} AND
+      project = #{project}
+    GROUP BY user
+  </select>
+
+  <select id="getStatisticsForProjectLatest" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.UserStatistics">
+    SELECT 
+      user ,
+      SUM(jobs) AS jobs,
+      SUM(grid_jobs) AS grid_jobs,
+      SUM(total_grid_core_hours) AS total_grid_core_hours,
+      SUM(total_cores) AS total_cores,
+      TRUNCATE(SUM(total_core_hours),2) AS total_core_hours,
+      TRUNCATE(SUM(total_waiting_time),2) AS total_waiting_time,
+      AVG(average_waiting_time) AS average_waiting_time
+    FROM
+    (
+      SELECT
+        user,
+        project,
+        SUM(jobs) AS jobs,
+        SUM(grid_jobs) AS grid_jobs,
+      	SUM(total_grid_core_hours) AS total_grid_core_hours,
+        SUM(total_cores) AS total_cores,
+        SUM(core_hours) AS total_core_hours,
+        SUM(waiting_time) AS total_waiting_time,
+        (SUM(waiting_time)/SUM(jobs)) AS average_waiting_time
+      FROM audit_project_prev 
+      WHERE 
+        project = #{project} AND
+        CONCAT_WS('', year, month) BETWEEN #{start} AND #{end}
+      GROUP BY user      
+       
+      UNION
+      
+      SELECT
+        user, 
+        project,
+        COUNT(*) AS jobs,
+        SUM(grid_jobs) AS grid_jobs,
+      	TRUNCATE(SUM(total_grid_core_hours), 2) AS total_grid_core_hours,
+        SUM(cores) AS total_cores,
+        TRUNCATE(SUM(core_hours), 2) AS total_core_hours,
+        TRUNCATE(SUM(waiting_time), 2) AS total_waiting_time,
+        TRUNCATE(avg(waiting_time), 2) AS average_waiting_time
+      FROM audit_project
+      WHERE 
+        project = #{project} AND
+        done <![CDATA[ >= ]]> #{bottom} AND
+        done <![CDATA[ < ]]> #{mid} 
+      GROUP BY user
+        
+      UNION
+         
+      SELECT
+        user,
+        account AS project,
+        COUNT(*) AS jobs,
+        SUM(IF(executable LIKE '%.globus%', 1, 0)) AS grid_jobs,
+		TRUNCATE(SUM(IF(executable LIKE '%.globus%', IF(DONE>START, CORES*(DONE-START)/3600,0), 0)), 2) AS total_grid_core_hours,
+        SUM(cores) AS total_cores,
+        TRUNCATE(SUM(IF(done>start, cores*(done-start), 0))/3600, 2) AS total_core_hours,
+        TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600, 2) AS total_waiting_time,
+        TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600/count(*), 2) AS average_waiting_time
+      FROM audit 
+      WHERE
+        account = #{project} AND
+        done <![CDATA[ >= ]]> #{mid} 
+        <!-- AND
+        done <![CDATA[ <= ]]> #{top}-->
+      GROUP BY user
+    ) DERIVED
+
+    WHERE
+      project = #{project}
+    GROUP BY user
+  </select>
+
+  <select id="getBarDiagramStatisticsForAllAccountNamesForInterval" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics">
+    SELECT 
+      SUM(serial_jobs) AS serial_jobs,
+      SUM(parallel_jobs) AS parallel_jobs,
+      SUM(serial_core_hours) serial_core_hours,
+      SUM(parallel_core_hours) parallel_core_Hours,
+      (SUM(waiting_time)/SUM(jobs)) AS avg_waiting_hours
+    FROM audit_user_prev 
+    WHERE
+      month = #{bottom} AND 
+      year = #{top}
+  </select>
+
+  <select id="getBarDiagramStatisticsForAccountNameSetForInterval" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics">
+    SELECT  
+      SUM(serial_jobs) AS serial_jobs, 
+      SUM(parallel_jobs) AS parallel_jobs, 
+      SUM(serial_core_hours) AS serial_core_hours,
+      SUM(parallel_core_hours) AS parallel_core_hours,
+      (SUM(waiting_time)/SUM(jobs)) AS avg_waiting_hours,
+      month, 
+      year 
+    FROM audit_user_prev  
+    WHERE
+      month = #{bottom} AND
+      year = #{top} AND 
+      user IN <foreach collection="accountNames" item="a" open="(" separator="," close=")">#{a}</foreach>
+  </select>
+   
+  <select id="getBarDiagramStatisticsForAccountNameSetForIntervalCurr" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics">
+    SELECT 
+      SUM(serial_jobs) AS serial_jobs,
+      SUM(parallel_jobs) AS parallel_jobs,
+      SUM(serial_core_hours) AS serial_core_hours,
+      SUM(parallel_core_hours) AS parallel_core_hours,
+      (SUM(tot_waiting_time)/SUM(tot_jobs)) AS avg_waiting_hours 
+    FROM
+    (          
+      SELECT  
+        SUM(IF(jobtype='serial',1,0)) AS serial_jobs,  
+        SUM(IF(jobtype='parallel',1,0)) AS parallel_jobs,  
+        TRUNCATE(SUM(IF(jobtype='serial', CORE_HOURS, 0)),2) AS serial_core_hours,  
+        TRUNCATE(SUM(IF(jobtype='parallel', CORE_HOURS, 0)),2) AS parallel_core_hours,  
+        SUM(waiting_time) AS tot_waiting_time,
+        COUNT(*) AS tot_jobs 
+      FROM audit_user
+      WHERE 
+        done <![CDATA[ >= ]]> #{bottom}  AND
+        done <![CDATA[ < ]]> #{mid} AND
+        user IN <foreach collection="accountNames" item="a" open="(" separator="," close=")">#{a}</foreach>
+         
+      UNION   
+       
+      SELECT 
+        SUM(IF(jobtype='serial',1,0)) AS serial_jobs, 
+        SUM(IF(jobtype='parallel',1,0)) AS parallel_jobs, 
+        TRUNCATE(SUM(IF(jobtype='serial' AND done>start, cores*(done-start), 0))/3600,2) AS serial_core_hours, 
+        TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start), 0))/3600,2) AS parallel_core_hours, 
+        (SUM(IF(start>qtime, (start-qtime), 0))/3600) AS tot_waiting_time,  
+        COUNT(*) AS tot_jobs
+      FROM audit  
+      WHERE
+        done <![CDATA[ >= ]]> #{mid} AND
+        done <![CDATA[ <= ]]> #{top} AND
+        user IN <foreach collection="accountNames" item="a" open="(" separator="," close=")">#{a}</foreach>
+    ) DERIVED
+  </select>   
+
+  <select id="getBarDiagramStatisticsForProjectForInterval" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics">
+    SELECT
+      SUM(serial_jobs) AS serial_jobs, 
+      SUM(parallel_jobs) AS parallel_jobs, 
+      SUM(serial_core_hours) AS serial_core_hours,
+      SUM(parallel_core_hours) AS parallel_core_hours,
+      (SUM(waiting_time)/SUM(jobs)) AS avg_waiting_hours
+    FROM audit_project_prev  
+    WHERE 
+      month=#{bottom} AND 
+      year=#{top} AND 
+      project = #{project}
+  </select>
+   
+  <select id="getBarDiagramStatisticsForProjectForIntervalCurr" parameterType="java.util.Map" resultType="nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics">
+    SELECT 
+      SUM(serial_jobs) AS serial_jobs,
+      SUM(parallel_jobs) AS parallel_jobs,
+      SUM(serial_core_hours) AS serial_core_hours,
+      SUM(parallel_core_hours) AS parallel_core_hours,
+      (SUM(tot_waiting_time)/SUM(tot_jobs)) AS avg_waiting_hours 
+    FROM
+    (
+      SELECT  
+        project,
+        SUM(IF(jobtype='serial',1,0)) AS serial_jobs,  
+        SUM(IF(jobtype='parallel',1,0)) AS parallel_jobs,  
+        TRUNCATE(SUM(IF(jobtype='serial', CORE_HOURS, 0)),2) AS serial_core_hours,  
+        TRUNCATE(SUM(IF(jobtype='parallel', CORE_HOURS, 0)),2) AS parallel_core_hours,  
+        SUM(waiting_time) AS tot_waiting_time,
+        COUNT(*) AS tot_jobs 
+      FROM audit_project
+      WHERE 
+        done <![CDATA[ >= ]]> #{bottom} AND
+        done <![CDATA[ < ]]> #{mid} AND
+        project = #{project}
+        
+      UNION   
+       
+      SELECT 
+        account AS project,
+        SUM(IF(jobtype='serial',1,0)) AS serial_jobs, 
+        SUM(IF(jobtype='parallel',1,0)) AS parallel_jobs, 
+        TRUNCATE(SUM(IF(jobtype='serial' AND done>start, cores*(done-start), 0))/3600,2) AS serial_core_hours, 
+        TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start), 0))/3600,2) AS parallel_core_hours, 
+        (SUM(IF(start>qtime, (start-qtime), 0))/3600) AS tot_waiting_time,  
+        COUNT(*) AS tot_jobs
+        FROM audit  
+        WHERE 
+          done <![CDATA[ >= ]]> #{mid} AND
+          done <![CDATA[ <= ]]> #{top} AND
+          account = #{project}
+    ) DERIVED
+  </select>   
+   
+  <select id="isCurrentUserAdmin" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT COUNT(*)		
+    FROM 
+    audit_admin
+    WHERE
+    tuakiriUniqueId = #{tuakiriUniqueId}
+  </select>	
+	
+</mapper>

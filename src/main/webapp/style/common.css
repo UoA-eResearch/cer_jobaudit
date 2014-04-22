@@ -1,0 +1,49 @@
+div#body {
+  background-color: white; 
+  padding: 8px; 
+  position: absolute; 
+  top: 0pt; 
+  left: 0; 
+  right: 0; }
+
+h3 {
+  color: #c33;
+  background: none;
+  font-weight: bold;
+  text-align: left;
+  font-size: 16pt;
+  margin-bottom: 5px;
+}
+
+h4 {
+  color: #c33;
+  background: none;
+  font-weight: bold;
+  text-align: left;
+  font-size: 14pt;
+  margin-bottom: 5px;
+}
+
+table#bordered {
+  font-family:arial;
+  background-color: #CDCDCD;
+  margin:10px 0pt 15px;
+  font-size: 8pt;
+  text-align: left;
+  border-spacing: 1px;
+}
+table#bordered td {
+  color: #3D3D3D;
+  padding: 4px;
+  background-color: #FFF;
+  vertical-align: top;
+}
+a {
+  color: #3D3D3D;
+  text-decoration: none;
+}
+a.white {
+  font-weight:bold; 
+  color: white;
+  text-decoration: none;
+}

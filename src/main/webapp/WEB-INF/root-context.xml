@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+      
+  <context:annotation-config />
+  <mvc:annotation-driven />
+	
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:configuration.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="auditDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${audit.jdbc.driver.className}"/>
+    <property name="url" value="${audit.jdbc.url}"/>
+    <property name="username" value="${audit.jdbc.username}"/>
+    <property name="password" value="${audit.jdbc.password}"/>
+    <property name="testOnBorrow" value="true"/>
+    <property name="validationQuery" value="SELECT 1"/>
+    <property name="initialSize" value="20"/>
+    <property name="maxActive" value="20"/>
+    <property name="maxIdle" value="20"/>
+  </bean>
+
+  <bean id="projectDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${project.jdbc.driver.className}"/>
+    <property name="url" value="${project.jdbc.url}"/>
+    <property name="username" value="${project.jdbc.username}"/>
+    <property name="password" value="${project.jdbc.password}"/>
+    <property name="testOnBorrow" value="true"/>
+    <property name="validationQuery" value="SELECT 1"/>
+    <property name="initialSize" value="3"/>
+    <property name="maxActive" value="3"/>
+    <property name="maxIdle" value="3"/>
+  </bean>
+
+  <bean id="executorService" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool" destroy-method="shutdownNow">
+    <constructor-arg value="30"/>
+  </bean>
+
+  <bean id="auditSqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="configLocation" value="classpath:db/sql_map_config.xml" />
+    <property name="dataSource" ref="auditDataSource" />
+  </bean>
+
+  <bean id="projectSqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="configLocation" value="classpath:db/sql_map_config.xml"/>
+    <property name="dataSource" ref="projectDataSource"/>
+  </bean>    
+ 
+  <bean id="auditDatabaseDao" class="nz.ac.auckland.cer.jobaudit.db.IBatisAuditDatabaseDao">
+    <property name="sqlSessionFactory" ref="auditSqlSessionFactoryBean"/>
+    <property name="executorService" ref="executorService"/>
+  </bean>
+    
+  <bean id="projectDatabaseDao" class="nz.ac.auckland.cer.jobaudit.db.IBatisProjectDatabaseDao">
+    <property name="sqlSessionFactory" ref="projectSqlSessionFactoryBean"/>
+  </bean>
+    
+  <bean id="AdminFilter" class="nz.ac.auckland.cer.jobaudit.filter.AdminFilter">
+    <property name="auditDatabaseDao" ref="auditDatabaseDao"/>
+    <property name="projectDatabaseDao" ref="projectDatabaseDao"/>
+  </bean>
+
+  <bean id="PrintHeadersAndAttributesFilter" class="nz.ac.auckland.cer.jobaudit.filter.PrintHeadersAndAttributesFilter"/>
+
+</beans>

@@ -1,0 +1,17 @@
+# database configuration
+audit.jdbc.driver.className=
+audit.jdbc.url=
+audit.jdbc.username=
+audit.jdbc.password=
+
+project.jdbc.driver.className=
+project.jdbc.url=
+project.jdbc.username=
+project.jdbc.password=
+
+# how many audit records are shown on a page
+display.max.jobrecords.per.page=
+
+# default selections for the time-period-selection dropdowns (months' numbering starts from 0)
+history.first.year=
+history.first.month=
