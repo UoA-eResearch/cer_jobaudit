@@ -7,7 +7,9 @@
   id="WebApp_ID"
   version="2.5">
 
-  <display-name>Cluster jobs</display-name>
+  <display-name>
+    Web-based interface to view records and statistics of the audit database of the Auckland NeSI cluster.
+  </display-name>
 
   <!-- Load root application context -->
   <listener>
