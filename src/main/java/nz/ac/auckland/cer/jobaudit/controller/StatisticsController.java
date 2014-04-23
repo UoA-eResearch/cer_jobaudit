@@ -10,8 +10,8 @@ import java.util.concurrent.Future;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.ac.auckland.cer.jobaudit.db.AuditDatabaseDao;
-import nz.ac.auckland.cer.jobaudit.db.ProjectDatabaseDao;
+import nz.ac.auckland.cer.jobaudit.dao.AuditDatabaseDao;
+import nz.ac.auckland.cer.jobaudit.dao.ProjectDatabaseDao;
 import nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics;
 import nz.ac.auckland.cer.jobaudit.pojo.StatisticsFormData;
 import nz.ac.auckland.cer.jobaudit.pojo.User;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
 
 //FIXME: Set up safety net for unexpected exceptions
 @Controller
