@@ -1,4 +1,4 @@
-package nz.ac.auckland.cer.jobaudit.db;
+package nz.ac.auckland.cer.jobaudit.dao;
 
 import java.util.ArrayList;
 import java.util.Calendar;
