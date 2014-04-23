@@ -5,8 +5,8 @@
   <select id="isCurrentUserAdviser" parameterType="java.lang.String" resultType="java.lang.Integer">
     SELECT COUNT(*)
     FROM adviser_properties 
-    WHERE propname = 'DN' AND 
-          propvalue LIKE #{sharedToken}
+    WHERE propname = 'tuakiriSharedToken' AND 
+          propvalue = #{sharedToken}
   </select>	
 
   <select id="getProjectCodes" resultType="java.lang.String">
@@ -24,8 +24,8 @@
   <select id="getResearcherIdForSharedToken" parameterType="java.lang.String" resultType="java.lang.Integer">
     SELECT researcherId as id
     FROM researcher_properties
-    WHERE propname = 'DN' AND
-          propvalue LIKE #{sharedToken}
+    WHERE propname = 'tuakiriSharedToken' AND
+          propvalue = #{sharedToken}
   </select>
 	
   <select id="getProjectCodesForSharedToken" parameterType="java.lang.String" resultType="java.lang.String">
@@ -36,8 +36,8 @@
        researcher_project.researcherId = (
          SELECT researcherId 
          FROM researcher_properties 
-         WHERE propname='DN' AND 
-               propvalue LIKE #{sharedToken}
+         WHERE propname='tuakiriSharedToken' AND 
+               propvalue = #{sharedToken}
        )
     WHERE hostInstitution = 'University of Auckland'
     ORDER BY projectCode
@@ -50,8 +50,8 @@
           researcherId IN ( 
             SELECT researcherId 
             FROM researcher_properties
-            WHERE propname = 'DN' AND
-                  propvalue LIKE #{sharedToken}
+            WHERE propname = 'tuakiriSharedToken' AND
+                  propvalue = #{sharedToken}
           )
   </select>	
 
@@ -65,8 +65,8 @@
              researcherId IN ( 
                SELECT researcherId 
                FROM researcher_properties
-               WHERE propname = 'DN' AND
-                     propvalue LIKE #{sharedToken}
+               WHERE propname = 'tuakiriSharedToken' AND
+                     propvalue = #{sharedToken}
              )
          
        UNION
@@ -77,8 +77,8 @@
              adviserId IN ( 
                SELECT adviserId 
                FROM adviser_properties
-               WHERE propname = 'DN' AND
-                     propvalue LIKE #{sharedToken}
+               WHERE propname = 'tuakiriSharedToken' AND
+                     propvalue = #{sharedToken}
              )
     ) DERIVED  
   </select>	
