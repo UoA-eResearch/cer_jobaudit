@@ -9,8 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import nz.ac.auckland.cer.jobaudit.db.AuditDatabaseDao;
-import nz.ac.auckland.cer.jobaudit.db.ProjectDatabaseDao;
+import nz.ac.auckland.cer.jobaudit.dao.AuditDatabaseDao;
+import nz.ac.auckland.cer.jobaudit.dao.ProjectDatabaseDao;
 
 public class AdminFilter implements Filter {
 
