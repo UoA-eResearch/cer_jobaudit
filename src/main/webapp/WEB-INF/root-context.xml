@@ -59,12 +59,12 @@
     <property name="dataSource" ref="projectDataSource"/>
   </bean>    
  
-  <bean id="auditDatabaseDao" class="nz.ac.auckland.cer.jobaudit.db.IBatisAuditDatabaseDao">
+  <bean id="auditDatabaseDao" class="nz.ac.auckland.cer.jobaudit.dao.IBatisAuditDatabaseDao">
     <property name="sqlSessionFactory" ref="auditSqlSessionFactoryBean"/>
     <property name="executorService" ref="executorService"/>
   </bean>
     
-  <bean id="projectDatabaseDao" class="nz.ac.auckland.cer.jobaudit.db.IBatisProjectDatabaseDao">
+  <bean id="projectDatabaseDao" class="nz.ac.auckland.cer.jobaudit.dao.IBatisProjectDatabaseDao">
     <property name="sqlSessionFactory" ref="projectSqlSessionFactoryBean"/>
   </bean>
     
