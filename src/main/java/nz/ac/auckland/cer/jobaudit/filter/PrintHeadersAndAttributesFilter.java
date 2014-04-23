@@ -11,7 +11,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 public class PrintHeadersAndAttributesFilter implements Filter {
+
+	private Logger log = Logger.getLogger("PrintHeadersAndAttributesFilter.class");
 
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain fc) throws IOException, ServletException {
 		try {
@@ -37,7 +41,7 @@ public class PrintHeadersAndAttributesFilter implements Filter {
 			System.err.println("Tuakiri Unique ID (eppn): " + request.getAttribute("eppn"));
 			System.err.println("mail: " + request.getAttribute("mail"));
 		} catch (final Exception e) {
-			e.printStackTrace();
+			log.error(e);
 			return;
 		}
 		fc.doFilter(req, resp);
