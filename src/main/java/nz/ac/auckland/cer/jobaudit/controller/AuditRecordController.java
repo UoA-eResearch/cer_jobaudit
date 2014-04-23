@@ -10,8 +10,8 @@ import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.ac.auckland.cer.jobaudit.db.AuditDatabaseDao;
-import nz.ac.auckland.cer.jobaudit.db.ProjectDatabaseDao;
+import nz.ac.auckland.cer.jobaudit.dao.AuditDatabaseDao;
+import nz.ac.auckland.cer.jobaudit.dao.ProjectDatabaseDao;
 import nz.ac.auckland.cer.jobaudit.pojo.AuditRecord;
 import nz.ac.auckland.cer.jobaudit.pojo.AuditRecordFormData;
 import nz.ac.auckland.cer.jobaudit.pojo.User;
