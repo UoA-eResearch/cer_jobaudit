@@ -35,6 +35,13 @@
     <property name="suffix" value=".jsp"/>
   </bean>
 
+  <bean id="AdminFilter" class="nz.ac.auckland.cer.jobaudit.filter.AdminFilter">
+    <property name="auditDatabaseDao" ref="auditDatabaseDao"/>
+    <property name="projectDatabaseDao" ref="projectDatabaseDao"/>
+  </bean>
+
+  <bean id="PrintHeadersAndAttributesFilter" class="nz.ac.auckland.cer.jobaudit.filter.PrintHeadersAndAttributesFilter"/>
+
   <!-- Configure bean to convert JSON to POJO and vice versa -->
   <bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
   

@@ -67,12 +67,5 @@
   <bean id="projectDatabaseDao" class="nz.ac.auckland.cer.jobaudit.dao.IBatisProjectDatabaseDao">
     <property name="sqlSessionFactory" ref="projectSqlSessionFactoryBean"/>
   </bean>
-    
-  <bean id="AdminFilter" class="nz.ac.auckland.cer.jobaudit.filter.AdminFilter">
-    <property name="auditDatabaseDao" ref="auditDatabaseDao"/>
-    <property name="projectDatabaseDao" ref="projectDatabaseDao"/>
-  </bean>
-
-  <bean id="PrintHeadersAndAttributesFilter" class="nz.ac.auckland.cer.jobaudit.filter.PrintHeadersAndAttributesFilter"/>
 
 </beans>
