@@ -26,11 +26,11 @@
     
     // set up structure to map account names to real names 
     <c:forEach items="${researchersForDropDown}" var="tmp">
-	  usermap["${tmp.id}"] = "${tmp.name}";
-	</c:forEach>
+        usermap["${tmp.id}"] = "${tmp.name}";
+    </c:forEach>
     <c:forEach items="${researcherList}" var="tmp">
-	  usermap["${tmp.id}"] = "${tmp.name}";
-	</c:forEach>
+        usermap["${tmp.id}"] = "${tmp.name}";
+    </c:forEach>
 
     // set up options in the drop down menues for the different categories 
     var options = { 'researcher': '', 'project': '', 'affiliation': '' };
@@ -40,21 +40,21 @@
         } else {
       	  options['researcher'] += "<option value='${tmp.id}'>${tmp.name}</option>";        	
         }
-	</c:forEach>	
+    </c:forEach>	
     <c:forEach items="${projectCodesForDropDown}" var="tmp">
       if ("${tmp}" == "${formData.categoryChoice}") {
     	options['project'] += "<option value='${tmp}' selected=\"selected\">${tmp}</option>";
       } else {
         options['project'] += "<option value='${tmp}'>${tmp}</option>";
       }
-	</c:forEach>
+    </c:forEach>
     <c:forEach items="${affiliationsForDropDown}" var="tmp">
       if ("${tmp}" == "${formData.categoryChoice}") {
   	    options['affiliation'] += "<option value='${tmp}' selected=\"selected\">${tmp}</option>";    	  
       } else {
   	    options['affiliation'] += "<option value='${tmp}'>${tmp}</option>";
       }
-	</c:forEach>
+    </c:forEach>
         
     $(document).ready(function() {
     	
@@ -84,7 +84,7 @@
   <h3>Job Submission Statistics</h3>
 
    <!-- define the request -->
-   <form:form id="form" method="post" modelAttribute="formData" commandName="formData">
+   <form:form id="form" method="get" modelAttribute="formData" commandName="formData">
     Get statistics for 
     <form:select id="category" path="category" items="${categoriesForDropDown}" />
     <form:select id="categoryChoice" path="categoryChoice" />
@@ -199,7 +199,7 @@
     </script>
     <br>
   
-    <!-- User overview -->
+    <!-- user overview -->
     <b>Per user:</b>
     <table id="statistics" class="tablesorter"><thead>
       <tr>
