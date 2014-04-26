@@ -2,32 +2,41 @@ package nz.ac.auckland.cer.jobaudit.pojo;
 
 public class AuditRecordFormData {
 
-	private String user;
-	private String orderBy;
-	private String sortOrder;
+    private String user;
+    private String orderBy;
+    private String sortOrder;
 
-	public String getUser() {
-		return user;
-	}
+    public String getUser() {
 
-	public void setUser(String user) {
-		this.user = user;
-	}
+        return user;
+    }
 
-	public String getOrderBy() {
-		return orderBy;
-	}
+    public void setUser(
+            String user) {
 
-	public void setOrderBy(String orderBy) {
-		this.orderBy = orderBy;
-	}
+        this.user = user;
+    }
 
-	public String getSortOrder() {
-		return sortOrder;
-	}
+    public String getOrderBy() {
 
-	public void setSortOrder(String sortOrder) {
-		this.sortOrder = sortOrder;
-	}
+        return orderBy;
+    }
+
+    public void setOrderBy(
+            String orderBy) {
+
+        this.orderBy = orderBy;
+    }
+
+    public String getSortOrder() {
+
+        return sortOrder;
+    }
+
+    public void setSortOrder(
+            String sortOrder) {
+
+        this.sortOrder = sortOrder;
+    }
 
 }

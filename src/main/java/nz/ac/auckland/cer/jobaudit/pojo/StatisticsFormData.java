@@ -2,59 +2,77 @@ package nz.ac.auckland.cer.jobaudit.pojo;
 
 public class StatisticsFormData {
 
-	String category;
-	String categoryChoice;
-	Integer firstMonth;
-	Integer lastMonth;
-	Integer firstYear;
-	Integer lastYear;
+    String category;
+    String categoryChoice;
+    Integer firstMonth;
+    Integer lastMonth;
+    Integer firstYear;
+    Integer lastYear;
 
-	public String getCategory() {
-		return category;
-	}
+    public String getCategory() {
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+        return category;
+    }
 
-	public String getCategoryChoice() {
-		return categoryChoice;
-	}
+    public void setCategory(
+            String category) {
 
-	public void setCategoryChoice(String categoryChoice) {
-		this.categoryChoice = categoryChoice;
-	}
+        this.category = category;
+    }
 
-	public Integer getFirstMonth() {
-		return firstMonth;
-	}
+    public String getCategoryChoice() {
 
-	public void setFirstMonth(Integer firstMonth) {
-		this.firstMonth = firstMonth;
-	}
+        return categoryChoice;
+    }
 
-	public Integer getLastMonth() {
-		return lastMonth;
-	}
+    public void setCategoryChoice(
+            String categoryChoice) {
 
-	public void setLastMonth(Integer lastMonth) {
-		this.lastMonth = lastMonth;
-	}
+        this.categoryChoice = categoryChoice;
+    }
 
-	public Integer getFirstYear() {
-		return firstYear;
-	}
+    public Integer getFirstMonth() {
 
-	public void setFirstYear(Integer firstYear) {
-		this.firstYear = firstYear;
-	}
+        return firstMonth;
+    }
 
-	public Integer getLastYear() {
-		return lastYear;
-	}
+    public void setFirstMonth(
+            Integer firstMonth) {
 
-	public void setLastYear(Integer lastYear) {
-		this.lastYear = lastYear;
-	}
+        this.firstMonth = firstMonth;
+    }
+
+    public Integer getLastMonth() {
+
+        return lastMonth;
+    }
+
+    public void setLastMonth(
+            Integer lastMonth) {
+
+        this.lastMonth = lastMonth;
+    }
+
+    public Integer getFirstYear() {
+
+        return firstYear;
+    }
+
+    public void setFirstYear(
+            Integer firstYear) {
+
+        this.firstYear = firstYear;
+    }
+
+    public Integer getLastYear() {
+
+        return lastYear;
+    }
+
+    public void setLastYear(
+            Integer lastYear) {
+
+        this.lastYear = lastYear;
+    }
 
 }

@@ -16,36 +16,47 @@ import nz.ac.auckland.cer.jobaudit.dao.ProjectDatabaseDao;
 
 public class AdminFilter implements Filter {
 
-	private AuditDatabaseDao auditDatabaseDao;
-	private ProjectDatabaseDao projectDatabaseDao;
-	private Logger log = Logger.getLogger("AdminFilter.class");
-	
-	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain fc) throws IOException, ServletException {
-		try {
-			String sharedToken = (String) req.getAttribute("shared-token");
-			String tuakiriUniqueId =  (String) req.getAttribute("eppn");
-			boolean isUserAdviser = this.projectDatabaseDao.isCurrentUserAdviser(sharedToken);
-			boolean isUserAdmin = this.auditDatabaseDao.isCurrentUserAdmin(tuakiriUniqueId);
-			req.setAttribute("showAdminView", isUserAdviser || isUserAdmin);
-		} catch (final Exception e) {
-			log.error(e);
-			return;
-		}
-		fc.doFilter(req, resp);
-	}
+    private AuditDatabaseDao auditDatabaseDao;
+    private ProjectDatabaseDao projectDatabaseDao;
+    private Logger log = Logger.getLogger("AdminFilter.class");
 
-	public void init(FilterConfig fc) throws ServletException {
-	}
+    public void doFilter(
+            ServletRequest req,
+            ServletResponse resp,
+            FilterChain fc) throws IOException, ServletException {
 
-	public void destroy() {
-	}
+        try {
+            String sharedToken = (String) req.getAttribute("shared-token");
+            String tuakiriUniqueId = (String) req.getAttribute("eppn");
+            boolean isUserAdviser = this.projectDatabaseDao.isCurrentUserAdviser(sharedToken);
+            boolean isUserAdmin = this.auditDatabaseDao.isCurrentUserAdmin(tuakiriUniqueId);
+            req.setAttribute("showAdminView", isUserAdviser || isUserAdmin);
+        } catch (final Exception e) {
+            log.error(e);
+            return;
+        }
+        fc.doFilter(req, resp);
+    }
 
-	public void setAuditDatabaseDao(AuditDatabaseDao auditDatabaseDao) {
-		this.auditDatabaseDao = auditDatabaseDao;
-	}
+    public void init(
+            FilterConfig fc) throws ServletException {
 
-	public void setProjectDatabaseDao(ProjectDatabaseDao projectDatabaseDao) {
-		this.projectDatabaseDao = projectDatabaseDao;
-	}
+    }
+
+    public void destroy() {
+
+    }
+
+    public void setAuditDatabaseDao(
+            AuditDatabaseDao auditDatabaseDao) {
+
+        this.auditDatabaseDao = auditDatabaseDao;
+    }
+
+    public void setProjectDatabaseDao(
+            ProjectDatabaseDao projectDatabaseDao) {
+
+        this.projectDatabaseDao = projectDatabaseDao;
+    }
 
 }
