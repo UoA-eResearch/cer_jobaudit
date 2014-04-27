@@ -80,18 +80,16 @@
 
 <body>
   <div id="body">
-  
-  <h3>Job Submission Statistics</h3>
 
    <!-- define the request -->
    <form:form id="form" method="get" modelAttribute="formData" commandName="formData">
-    Get statistics for 
+    <b>Get statistics for</b>
     <form:select id="category" path="category" items="${categoriesForDropDown}" />
     <form:select id="categoryChoice" path="categoryChoice" />
-    from
+    <b>from</b>
     <form:select path="firstMonth" items="${monthsForDropDown}" />
     <form:select path="firstYear" items="${yearsForDropDown}" />
-    to
+    <b>to</b>
     <form:select path="lastMonth" items="${monthsForDropDown}" />
     <form:select path="lastYear" items="${yearsForDropDown}" />
     <input type="submit" value="Submit">
