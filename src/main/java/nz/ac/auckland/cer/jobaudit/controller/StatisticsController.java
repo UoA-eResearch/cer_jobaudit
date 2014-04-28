@@ -64,6 +64,8 @@ public class StatisticsController {
         return this.handleRequest(request, formData);
     }
 
+    // TODO: Handle the situation where researcher has never submitted any job
+    //       Dropdown for researcher doesn't contain any items in that case
     private ModelAndView handleRequest(
             HttpServletRequest request,
             StatisticsFormData formData) throws Exception {

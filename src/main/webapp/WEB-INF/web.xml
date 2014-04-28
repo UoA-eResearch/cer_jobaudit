@@ -35,22 +35,18 @@
   </servlet-mapping>
 
   <!-- Spring-enabled servlet filter definitions and mappings-->
-  <!--
   <filter>
     <filter-name>TestFilter</filter-name>
     <filter-class>nz.ac.auckland.cer.jobaudit.filter.TestFilter</filter-class>
   </filter>
-  -->
   <filter>
     <filter-name>AdminFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>
-  <!--
   <filter-mapping>
     <filter-name>TestFilter</filter-name>
     <servlet-name>audit</servlet-name>
   </filter-mapping>
-  -->
   <filter-mapping>
     <filter-name>AdminFilter</filter-name>
     <servlet-name>audit</servlet-name>

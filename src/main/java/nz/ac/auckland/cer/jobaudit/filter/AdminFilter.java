@@ -14,6 +14,11 @@ import org.apache.log4j.Logger;
 import nz.ac.auckland.cer.jobaudit.dao.AuditDatabaseDao;
 import nz.ac.auckland.cer.jobaudit.dao.ProjectDatabaseDao;
 
+/*
+ * TODO: Log error if expected request attributes are not there
+ * TODO: Send e-mail if expected request attributes are not there
+ * TODO: Log each request to tomcat-central logfile (file appender): path, method, cn, shared-token
+ */
 public class AdminFilter implements Filter {
 
     private AuditDatabaseDao auditDatabaseDao;
