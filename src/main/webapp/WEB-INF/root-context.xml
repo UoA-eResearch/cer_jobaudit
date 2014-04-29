@@ -68,4 +68,6 @@
     <property name="sqlSessionFactory" ref="projectSqlSessionFactoryBean"/>
   </bean>
 
+  <bean id="auditUtil" class="nz.ac.auckland.cer.jobaudit.util.AuditUtil" />
+  
 </beans>
