@@ -9,6 +9,8 @@ project.jdbc.url=
 project.jdbc.username=
 project.jdbc.password=
 
+test.identity.properties.path=
+
 # how many audit records are shown on a page
 display.max.jobrecords.per.page=
 
