@@ -32,14 +32,21 @@
       </c:forEach>
 
       // set up options in the drop down menues for the different categories 
-      var options = { 'researcher': '', 'project': '', 'affiliation': '' };
-      <c:forEach items="${researchersForDropDown}" var="tmp">
-        if ("${tmp.id}" == "${formData.categoryChoice}") {
-          options['researcher'] += "<option value='${tmp.id}' selected=\"selected\">${tmp.name}</option>";
-        } else {
-          options['researcher'] += "<option value='${tmp.id}'>${tmp.name}</option>";          
-        }
-      </c:forEach>  
+      var options = { 'researcher': '', 'project': '', 'affiliation': '' };      
+      <c:choose>
+        <c:when test="${empty researchersForDropDown}">
+          options['researcher'] += "<option value='__dummy__'>${cn}</option>";          
+        </c:when>
+        <c:otherwise>
+          <c:forEach items="${researchersForDropDown}" var="tmp">
+            if ("${tmp.id}" == "${formData.categoryChoice}") {
+              options['researcher'] += "<option value='${tmp.id}' selected=\"selected\">${tmp.name}</option>";
+            } else {
+              options['researcher'] += "<option value='${tmp.id}'>${tmp.name}</option>";
+            }
+          </c:forEach>  
+        </c:otherwise>
+      </c:choose>
       
       <c:forEach items="${projectCodesForDropDown}" var="tmp">
         if ("${tmp}" == "${formData.categoryChoice}") {
@@ -258,8 +265,8 @@
         </c:when>
  
         <c:otherwise>
-          <br><br>
-          <b>No audit data available for current selection</b>
+          <br>
+          <div class="infoblock">No job history data available for ${cn} for current selection</div>
         </c:otherwise>
  
       </c:choose>
