@@ -52,7 +52,11 @@ public class AuditRecordController {
         String sharedToken = (String) request.getAttribute("shared-token");
         // FIXME: handle situation when requester doesn't have a cluster account
         List<String> accountNames = projectDatabaseDao.getResearcherOrAdviserAccountNamesForSharedToken(sharedToken);
-        formData.setUser(accountNames.get(0));
+        if (accountNames != null && accountNames.size() > 0) {
+            formData.setUser(accountNames.get(0));            
+        } else {
+            formData.setUser("__dummy__");
+        }
         formData.setSortOrder("desc");
         formData.setOrderBy("qtime");
         return this.handleRequest(request, formData);
@@ -75,13 +79,13 @@ public class AuditRecordController {
         Future<Integer> fnr = this.auditDatabaseDao.getNumberRecords(formData.getUser());
         if ((Boolean) request.getAttribute("showAdminView")) {
             fUsers = this.auditDatabaseDao.getUsers();
-            mav.addObject("researchersInDropDown", this.createResearcherDropDownMap(fUsers.get()));
+            mav.addObject("researchersInDropDown", this.createResearcherDropDownMap(request, fUsers.get()));
         } else {
             String sharedToken = (String) request.getAttribute("shared-token");
             List<String> accountNames = projectDatabaseDao
                     .getResearcherOrAdviserAccountNamesForSharedToken(sharedToken);
             List<User> users = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
-            mav.addObject("researchersInDropDown", this.createResearcherDropDownMap(users));
+            mav.addObject("researchersInDropDown", this.createResearcherDropDownMap(request, users));
         }
         mav.addObject("totalNumberRecords", fnr.get());
         mav.addObject("auditRecordRequest", formData);
@@ -121,11 +125,16 @@ public class AuditRecordController {
     }
 
     private Map<String, String> createResearcherDropDownMap(
+            HttpServletRequest request,
             List<User> users) throws Exception {
 
         Map<String, String> tmp = new LinkedHashMap<String, String>();
-        for (User u : users) {
-            tmp.put(u.getId(), u.getName());
+        if (users == null || users.size() == 0) {
+            tmp.put("__dummy__", (String)request.getAttribute("cn"));
+        } else {
+            for (User u : users) {
+                tmp.put(u.getId(), u.getName());
+            }
         }
         return tmp;
     }
