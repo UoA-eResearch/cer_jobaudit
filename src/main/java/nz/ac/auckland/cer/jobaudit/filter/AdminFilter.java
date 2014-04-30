@@ -18,9 +18,7 @@ import nz.ac.auckland.cer.jobaudit.dao.AuditDatabaseDao;
 import nz.ac.auckland.cer.jobaudit.dao.ProjectDatabaseDao;
 
 /*
- * TODO: Log error if expected request attributes are not there
  * TODO: Send e-mail if expected request attributes are not there
- * TODO: Log each request to tomcat-central logfile (file appender): path, method, cn, shared-token
  */
 public class AdminFilter implements Filter {
 
@@ -39,9 +37,10 @@ public class AdminFilter implements Filter {
             HttpServletRequest request = (HttpServletRequest) req;
             String sharedToken = (String) req.getAttribute("shared-token");
             String eppn = (String) req.getAttribute("eppn");
-            flog.info(auditUtil.createAuditLogMessage(request, "eppn=\"" + eppn +"\" shared-token=" + sharedToken));
-            if (eppn == null || sharedToken == null) {
-                log.error("At least one required Tuakiri attribute is null: eppn=" + eppn + ", shared-token=" + sharedToken);
+            String cn = (String) req.getAttribute("cn");
+            flog.info(auditUtil.createAuditLogMessage(request, "cn=\"" + cn + "\" eppn=" + eppn + " shared-token=" + sharedToken));
+            if (cn == null || eppn == null || sharedToken == null) {
+                log.error("At least one required Tuakiri attribute is null: cn=" + cn + ", eppn=" + eppn + ", shared-token=" + sharedToken);
             }
             boolean isUserAdviser = this.projectDatabaseDao.isCurrentUserAdviser(sharedToken);
             boolean isUserAdmin = this.auditDatabaseDao.isCurrentUserAdmin(eppn);
