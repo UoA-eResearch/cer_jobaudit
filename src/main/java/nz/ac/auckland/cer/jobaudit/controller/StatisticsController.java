@@ -64,8 +64,12 @@ public class StatisticsController {
         return this.handleRequest(request, formData);
     }
 
-    // TODO: Handle the situation where researcher has never submitted any job
-    //       Dropdown for researcher doesn't contain any items in that case
+    /*
+     * TODO: Handle the situation where 
+     *       a. requester has never submitted any job.
+     *          dropdown for researcher doesn't contain any items in that case
+     *       b. requester is on no project
+     */
     private ModelAndView handleRequest(
             HttpServletRequest request,
             StatisticsFormData formData) throws Exception {
@@ -86,7 +90,6 @@ public class StatisticsController {
         // initialize categories
         List<String> categories = new LinkedList<String>();
         categories.add("Researcher");
-        categories.add("Project");
         if ((Boolean) request.getAttribute("showAdminView")) {
             categories.add("Affiliation");
             if (formData.getCategory().equals("Affiliation")) {
@@ -107,6 +110,9 @@ public class StatisticsController {
             projectCodesForDropDown = this.projectDatabaseDao.getProjectCodesForSharedToken(sharedToken);
         }
 
+        if (projectCodesForDropDown != null && projectCodesForDropDown.size() > 0) {
+            categories.add("Project");
+        }
         from.set(formData.getFirstYear(), formData.getFirstMonth(), 1, 0, 0, 0);
         to.set(formData.getLastYear(), formData.getLastMonth() + 1, 1, 0, 0, 0);
 
@@ -140,6 +146,7 @@ public class StatisticsController {
         mav.addObject("userStatistics", userstatslist);
         mav.addObject("jobStatistics", bdslist);
         mav.addObject("formData", formData);
+        mav.addObject("cn", request.getAttribute("cn"));
         return mav;
     }
 
