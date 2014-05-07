@@ -54,9 +54,11 @@ public class StatisticsController {
         if (formData == null || formData.getFirstMonth() == null) {
             // no choice has been made
             Calendar now = Calendar.getInstance();
+            Calendar oneYearBack = Calendar.getInstance();
+            oneYearBack.add(Calendar.YEAR, -1);
             formData = new StatisticsFormData();
-            formData.setFirstMonth(this.historyFirstMonth);
-            formData.setFirstYear(this.historyFirstYear);
+            formData.setFirstMonth(oneYearBack.get(Calendar.MONTH));
+            formData.setFirstYear(oneYearBack.get(Calendar.YEAR));
             formData.setLastMonth(now.get(Calendar.MONTH));
             formData.setLastYear(now.get(Calendar.YEAR));
             formData.setCategory("Researcher");            
