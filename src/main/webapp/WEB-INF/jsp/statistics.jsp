@@ -266,7 +266,7 @@
  
         <c:otherwise>
           <br>
-          <div class="infoblock">No job history data available for ${cn} for current selection</div>
+          <div class="infoblock">No job history data available for current selection</div>
         </c:otherwise>
  
       </c:choose>
