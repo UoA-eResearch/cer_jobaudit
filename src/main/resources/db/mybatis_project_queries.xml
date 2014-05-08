@@ -10,8 +10,8 @@
   </select>	
 
   <select id="getProjectCodes" resultType="java.lang.String">
-    SELECT DISTINCT
-      projectCode
+    SELECT DISTINCT 
+    CONCAT_WS(": ", projectCode, IF(LENGTH(name)>60,CONCAT(SUBSTRING(name,1,80), "..."),name))
     FROM project
     WHERE
       projectCode LIKE 'nesi%' OR
@@ -29,7 +29,8 @@
   </select>
 	
   <select id="getProjectCodesForSharedToken" parameterType="java.lang.String" resultType="java.lang.String">
-    SELECT projectCode
+    SELECT
+    CONCAT_WS(": ", projectCode, IF(LENGTH(name)>60,CONCAT(SUBSTRING(name,1,80), "..."),name))
     FROM project 
     INNER JOIN researcher_project 
     ON researcher_project.projectId = project.id AND 

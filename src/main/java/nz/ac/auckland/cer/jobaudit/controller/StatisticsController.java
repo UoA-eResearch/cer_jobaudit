@@ -113,14 +113,14 @@ public class StatisticsController {
         to.set(formData.getLastYear(), formData.getLastMonth() + 1, 1, 0, 0, 0);
 
         if (formData.getCategory().equals("Project")) {
-            String project = formData.getCategoryChoice();
-            userstatslist = this.auditDatabaseDao.getStatisticsForProject(project, from, to);
+            String projectCode = formData.getCategoryChoice().split(":")[0];
+            userstatslist = this.auditDatabaseDao.getStatisticsForProject(projectCode, from, to);
             List<String> tmp = new LinkedList<String>();
             for (UserStatistics us : userstatslist) {
                 tmp.add(us.getUser());
             }
             researcherList = this.auditDatabaseDao.getUsersForAccountNames(tmp);
-            fbdslist = auditDatabaseDao.getProjectStats(project, formData.getFirstYear(), formData.getFirstMonth(),
+            fbdslist = auditDatabaseDao.getProjectStats(projectCode, formData.getFirstYear(), formData.getFirstMonth(),
                     formData.getLastYear(), formData.getLastMonth());
         } else {
             userstatslist = this.auditDatabaseDao.getStatisticsForAccountNames(accountNames, from, to);
