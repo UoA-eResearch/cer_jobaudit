@@ -40,8 +40,8 @@ public class IdentityInterceptor implements Filter {
                     for (Object key : props.keySet()) {
                         req.setAttribute((String) key, props.get(key));
                     }
+                    this.logIdentityChange((HttpServletRequest) req, props);
                 }
-                this.logIdentityChange((HttpServletRequest) req, props);
             }
         } catch (Exception e) {
             log.error("Unexpected error", e);
