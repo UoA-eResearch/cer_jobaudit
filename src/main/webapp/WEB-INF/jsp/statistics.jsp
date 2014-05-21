@@ -5,13 +5,13 @@
 
 <html>
   <head>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.7.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.8.3.min.js"></script>
     <!--[if lte IE 8]><script type="text/javascript" src="<%=request.getContextPath()%>/js/excanvas.min.js"></script><![endif]-->
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.flot.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.flot.stack.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/util.js"></script>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/style/tablesorter/blue/style.css" type="text/css"/>
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/style/tablesorter/theme.default.css" type="text/css"/>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/style/common.css" type="text/css"/>
   
     <script type="text/javascript">
@@ -72,15 +72,7 @@
           $('#categoryChoice').empty().append(options[this.value.toLowerCase()]);
         });
 
-        $("#statistics").tablesorter({widgets:['zebra'], sortList:[[6,1]], headers: {0: {sorter:false}}});
-        var table = $("#statistics"); 
-        table.bind("sortEnd",function() { 
-          var i = 1;
-          table.find("tr:gt(0)").each(function(){
-            $(this).find("td:eq(0)").text(i);
-            i++;
-          });
-        });
+        $("#statistics").tablesorter({sortList:[[5,1]]});
       });
     </script>
   </head>
@@ -123,7 +115,7 @@
           <b>Total number of jobs</b>
           <table id="bordered">
             <tr>
-              <td>&nbsp;</td>
+              <td align="right">&nbsp;</td>
               <td align="right">Total</td>
               <td align="right">Via Grid</td>
             </tr>
@@ -224,7 +216,6 @@
           <table id="statistics" class="tablesorter">
             <thead>
               <tr>
-                <th>#</th>
                 <th>User Name</th>
                 <th>User ID</th>
                 <th>Jobs</th>
@@ -240,12 +231,13 @@
               <c:forEach items="${userStatistics}" var="statistics">
                 <c:set var="avgWaitingTime" value="${statistics.total_waiting_time/statistics.jobs}" />
                 <tr>
-                  <td>&nbsp;</td>
                   <td>
                     <a href="<%=request.getContextPath()%>/html/auditrecords?accountName=${statistics.user}">
-                      <script type="text/javascript">
-                        document.write(usermap["${statistics.user}"]);
-                      </script>
+                      <div id="name-${statistics.user}">
+                        <script type="text/javascript">
+                          $('#name-${statistics.user}').html("" + usermap['${statistics.user}']);
+                        </script>
+                      </div>
                     </a>
                   </td> 
                   <td>

@@ -4,7 +4,7 @@
 
 <html>
   <head>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.7.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.paging.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/TableRenderer.js"></script>
