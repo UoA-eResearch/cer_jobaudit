@@ -33,10 +33,15 @@ public class IdentityInterceptor implements Filter {
             Properties props = new Properties();
             if (this.idResource.exists() && this.idResource.isReadable()) {
                 props.load(idResource.getInputStream());
-                for (Object key : props.keySet()) {
-                  req.setAttribute((String)key, props.get(key));
+                String admins = (String) props.get("admins");
+                String eppn = (String) req.getAttribute("eppn");
+                if (admins != null && (admins.equals("*") || (eppn != null && admins.contains(eppn)))) {
+                    props.remove("admins");
+                    for (Object key : props.keySet()) {
+                        req.setAttribute((String) key, props.get(key));
+                    }
                 }
-                this.logIdentityChange((HttpServletRequest)req, props);
+                this.logIdentityChange((HttpServletRequest) req, props);
             }
         } catch (Exception e) {
             log.error("Unexpected error", e);
@@ -46,7 +51,7 @@ public class IdentityInterceptor implements Filter {
     }
 
     /*
-     * Log message 
+     * Log message
      */
     private void logIdentityChange(
             HttpServletRequest request,
@@ -56,7 +61,7 @@ public class IdentityInterceptor implements Filter {
         msg.append("ID-INTERCEPTION:");
         for (Object key : props.keySet()) {
             msg.append(" " + key + "=\"" + props.get(key) + "\"");
-        }  
+        }
         log.info(msg.toString());
         flog.info(auditUtil.createAuditLogMessage(request, msg.toString()));
     }
