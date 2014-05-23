@@ -4,14 +4,14 @@
 
 <html>
   <head>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.8.3.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.tablesorter.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.paging.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/TableRenderer.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/Paginator.js"></script>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/style/common.css" type="text/css"/>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/style/recordtable.css" type="text/css"/>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/style/pagination.css" type="text/css"/>
+    <script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.paging.min.js"></script>
+    <script type="text/javascript" src="../js/TableRenderer.js"></script>
+    <script type="text/javascript" src="../js/Paginator.js"></script>
+    <link rel="stylesheet" href="../style/common.css" type="text/css"/>
+    <link rel="stylesheet" href="../style/recordtable.css" type="text/css"/>
+    <link rel="stylesheet" href="../style/pagination.css" type="text/css"/>
 
     <script type="text/javascript">
       var offset = 0;
@@ -29,7 +29,7 @@
         // Load records from via REST call to database service 
         function loadRecords() {
           $.ajax({
-            url: '<%=request.getContextPath()%>/html/auditrecords/rest/' + $('#accountName').val() + '/' + $('#orderBy').val() + '/' + $('#sortOrder').val() + '/' + offset,
+            url: '../html/auditrecords/rest/' + $('#accountName').val() + '/' + $('#orderBy').val() + '/' + $('#sortOrder').val() + '/' + offset,
             cache: false,
             success: renderTable
           });

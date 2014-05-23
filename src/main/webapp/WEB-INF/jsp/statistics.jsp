@@ -5,14 +5,14 @@
 
 <html>
   <head>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.8.3.min.js"></script>
-    <!--[if lte IE 8]><script type="text/javascript" src="<%=request.getContextPath()%>/js/excanvas.min.js"></script><![endif]-->
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.flot.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.flot.stack.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.tablesorter.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/util.js"></script>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/style/tablesorter/theme.default.css" type="text/css"/>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/style/common.css" type="text/css"/>
+    <script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+    <!--[if lte IE 8]><script type="text/javascript" src="../js/excanvas.min.js"></script><![endif]-->
+    <script type="text/javascript" src="../js/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.flot.stack.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="../js/util.js"></script>
+    <link rel="stylesheet" href="../style/tablesorter/theme.default.css" type="text/css"/>
+    <link rel="stylesheet" href="../style/common.css" type="text/css"/>
   
     <script type="text/javascript">
       // arrays for the data to be plotted 
@@ -232,7 +232,7 @@
                 <c:set var="avgWaitingTime" value="${statistics.total_waiting_time/statistics.jobs}" />
                 <tr>
                   <td>
-                    <a href="<%=request.getContextPath()%>/html/auditrecords?accountName=${statistics.user}">
+                    <a href="../html/auditrecords?accountName=${statistics.user}">
                       <div id="name-${statistics.user}">
                         <script type="text/javascript">
                           $('#name-${statistics.user}').html("" + usermap['${statistics.user}']);
@@ -241,7 +241,7 @@
                     </a>
                   </td> 
                   <td>
-                    <a href="<%=request.getContextPath()%>/html/auditrecords?accountName=${statistics.user}">${statistics.user}</a>
+                    <a href="../html/auditrecords?accountName=${statistics.user}">${statistics.user}</a>
                   </td> 
                   <td align="right">${statistics.jobs}</td> 
                   <td align="right">${statistics.grid_jobs}</td> 
