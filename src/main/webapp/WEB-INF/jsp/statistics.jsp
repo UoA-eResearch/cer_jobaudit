@@ -233,17 +233,13 @@
                 <c:set var="avgWaitingTime" value="${statistics.total_waiting_time/statistics.jobs}" />
                 <tr>
                   <td>
-                    <a href="../html/auditrecords?accountName=${statistics.user}">
-                      <div id="name-${statistics.user}">
-                        <script type="text/javascript">
-                          $('#name-${statistics.user}').html("" + usermap['${statistics.user}']);
-                        </script>
-                      </div>
-                    </a>
+                    <div id="name-${statistics.user}">
+                      <script type="text/javascript">
+                        $('#name-${statistics.user}').html("" + usermap['${statistics.user}']);
+                      </script>
+                    </div>
                   </td> 
-                  <td>
-                    <a href="../html/auditrecords?accountName=${statistics.user}">${statistics.user}</a>
-                  </td> 
+                  <td>${statistics.user}</td> 
                   <td align="right">${statistics.jobs}</td> 
                   <td align="right">${statistics.grid_jobs}</td> 
                   <td align="right">${statistics.total_cores}</td> 
