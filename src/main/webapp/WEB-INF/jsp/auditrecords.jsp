@@ -57,9 +57,9 @@
   <body>
     <div id="body">
       <div id="summary">
-        <form:form id="form" method="post" modelAttribute="auditRecordRequest">
+        <form:form method="POST" action='auditrecords' commandName="formData">
           <b>Cluster job audit records of</b> 
-          <form:select id="accountName" path="user" items="${researchersInDropDown}" />
+          <form:select id="accountName" path="accountName" items="${researchersInDropDown}" />
           sorted by 
           <form:select id="orderBy" path="orderBy" items="${orderBys}" />
           <form:select id="sortOrder" path="sortOrder" items="${sortOrders}"/>

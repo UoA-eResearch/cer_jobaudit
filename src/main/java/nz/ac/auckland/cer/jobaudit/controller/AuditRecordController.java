@@ -17,6 +17,7 @@ import nz.ac.auckland.cer.jobaudit.pojo.AuditRecordFormData;
 import nz.ac.auckland.cer.jobaudit.pojo.User;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,7 +46,7 @@ public class AuditRecordController {
     }
 
     @RequestMapping(value = "auditrecords", method = RequestMethod.GET)
-    public ModelAndView doGet(
+    public ModelAndView onFormGet(
             HttpServletRequest request) throws Exception {
 
         AuditRecordFormData formData = new AuditRecordFormData();
@@ -53,9 +54,9 @@ public class AuditRecordController {
         // FIXME: handle situation when requester doesn't have a cluster account
         List<String> accountNames = projectDatabaseDao.getResearcherOrAdviserAccountNamesForSharedToken(sharedToken);
         if (accountNames != null && accountNames.size() > 0) {
-            formData.setUser(accountNames.get(0));            
+            formData.setAccountName(accountNames.get(0));            
         } else {
-            formData.setUser("__dummy__");
+            formData.setAccountName("__dummy__");
         }
         formData.setSortOrder("desc");
         formData.setOrderBy("qtime");
@@ -63,9 +64,9 @@ public class AuditRecordController {
     }
 
     @RequestMapping(value = "auditrecords", method = RequestMethod.POST)
-    public ModelAndView doPost(
+    public ModelAndView onFormSubmit(
             HttpServletRequest request,
-            AuditRecordFormData formData) throws Exception {
+            @ModelAttribute("formData") AuditRecordFormData formData) throws Exception {
 
         return this.handleRequest(request, formData);
     }
@@ -76,10 +77,10 @@ public class AuditRecordController {
 
         ModelAndView mav = new ModelAndView("auditrecords");
         Future<List<User>> fUsers = null;
-        Future<Integer> fnr = this.auditDatabaseDao.getNumberRecords(formData.getUser());
+        Future<Integer> fnr = this.auditDatabaseDao.getNumberRecords(formData.getAccountName());
         if ((Boolean) request.getAttribute("showAdminView")) {
             fUsers = this.auditDatabaseDao.getUsers();
-            mav.addObject("user", formData.getUser());
+            mav.addObject("accountName", formData.getAccountName());
             mav.addObject("researchersInDropDown", this.createResearcherDropDownMap(request, fUsers.get()));
         } else {
             String sharedToken = (String) request.getAttribute("shared-token");
@@ -89,7 +90,7 @@ public class AuditRecordController {
             mav.addObject("researchersInDropDown", this.createResearcherDropDownMap(request, users));
         }
         mav.addObject("totalNumberRecords", fnr.get());
-        mav.addObject("auditRecordRequest", formData);
+        mav.addObject("formData", formData);
         mav.addObject("orderBys", this.allowedOrderBys);
         mav.addObject("sortOrders", this.createSortOrderDropDownMap());
         mav.addObject("maxJobRecordsPerPage", this.maxJobRecordsPerPage);
