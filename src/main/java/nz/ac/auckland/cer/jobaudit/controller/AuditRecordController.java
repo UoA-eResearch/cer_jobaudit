@@ -79,6 +79,7 @@ public class AuditRecordController {
         Future<Integer> fnr = this.auditDatabaseDao.getNumberRecords(formData.getUser());
         if ((Boolean) request.getAttribute("showAdminView")) {
             fUsers = this.auditDatabaseDao.getUsers();
+            mav.addObject("user", formData.getUser());
             mav.addObject("researchersInDropDown", this.createResearcherDropDownMap(request, fUsers.get()));
         } else {
             String sharedToken = (String) request.getAttribute("shared-token");
