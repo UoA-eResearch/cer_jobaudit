@@ -57,7 +57,7 @@
   <body>
     <div id="body">
       <div id="summary">
-        <form:form method="POST" action='auditrecords' commandName="formData">
+        <form:form method="GET" action='auditrecords' commandName="formData">
           <b>Cluster job audit records of</b> 
           <form:select id="accountName" path="accountName" items="${researchersInDropDown}" />
           sorted by 
