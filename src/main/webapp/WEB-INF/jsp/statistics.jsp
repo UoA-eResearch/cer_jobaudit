@@ -235,7 +235,10 @@
                   <td>
                     <div id="name-${statistics.user}">
                       <script type="text/javascript">
-                        $('#name-${statistics.user}').html("" + usermap['${statistics.user}']);
+                        // Special chars like '.' have to be escaped with with two backslashes in jquery. 
+                        // All users that don't have upis have usernames like <firstname>.<lastname> 
+                        var selector = '#name-' + '${statistics.user}'.replace('.','\\.');
+                        $(selector).html("" + usermap['${statistics.user}']);
                       </script>
                     </div>
                   </td> 
