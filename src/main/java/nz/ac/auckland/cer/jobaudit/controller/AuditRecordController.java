@@ -47,27 +47,22 @@ public class AuditRecordController {
 
     @RequestMapping(value = "auditrecords", method = RequestMethod.GET)
     public ModelAndView onFormGet(
-            HttpServletRequest request) throws Exception {
-
-        AuditRecordFormData formData = new AuditRecordFormData();
-        String sharedToken = (String) request.getAttribute("shared-token");
-        // FIXME: handle situation when requester doesn't have a cluster account
-        List<String> accountNames = projectDatabaseDao.getResearcherOrAdviserAccountNamesForSharedToken(sharedToken);
-        if (accountNames != null && accountNames.size() > 0) {
-            formData.setAccountName(accountNames.get(0));            
-        } else {
-            formData.setAccountName("__dummy__");
-        }
-        formData.setSortOrder("desc");
-        formData.setOrderBy("qtime");
-        return this.handleRequest(request, formData);
-    }
-
-    @RequestMapping(value = "auditrecords", method = RequestMethod.POST)
-    public ModelAndView onFormSubmit(
             HttpServletRequest request,
             @ModelAttribute("formData") AuditRecordFormData formData) throws Exception {
 
+        if (formData == null || formData.getAccountName() == null) {
+            formData = new AuditRecordFormData();
+            String sharedToken = (String) request.getAttribute("shared-token");
+            // FIXME: handle situation when requester doesn't have a cluster account
+            List<String> accountNames = projectDatabaseDao.getResearcherOrAdviserAccountNamesForSharedToken(sharedToken);
+            if (accountNames != null && accountNames.size() > 0) {
+                formData.setAccountName(accountNames.get(0));            
+            } else {
+                formData.setAccountName("__dummy__");
+            }
+            formData.setSortOrder("desc");
+            formData.setOrderBy("qtime");
+        }
         return this.handleRequest(request, formData);
     }
 
