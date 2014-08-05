@@ -13,7 +13,7 @@ AS
     jobtype AS jobtype,
     done AS done,
     executable AS executable,
-    IF(done>start, cores*(done-start)/3600,0) AS core_hours,
+    IF(done>start, cores*(done-start-suspended)/3600,0) AS core_hours,
     IF(start>qtime,(start-qtime)/3600,0) AS waiting_time
   FROM audit
   WHERE done>UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH));
@@ -34,7 +34,7 @@ AS
     account AS project,
     jobtype AS jobtype,
     done AS done,
-    IF(done>start, cores*(done-start)/3600,0) AS core_hours,
+    IF(done>start, cores*(done-start-suspended)/3600,0) AS core_hours,
     IF(start>qtime,(start-qtime)/3600,0) AS waiting_time
   FROM audit
   WHERE

@@ -111,8 +111,8 @@
       IF(qtime>0, FROM_UNIXTIME(qtime, '%Y/%m/%d %H:%i:%s'), 'N/A') AS qtime,
       IF(start>0, FROM_UNIXTIME(start, '%Y/%m/%d %H:%i:%s'), 'N/A') AS start,
       IF(done>0, FROM_UNIXTIME(done, '%Y/%m/%d %H:%i:%s'), 'N/A') AS done,
-      (done-start)*cores AS coretime,
-      ROUND((utilisation/((done-start)*cores)) * 100) AS efficacy,
+      (done-start-suspended)*cores AS coretime,
+      ROUND((utilisation/((done-start-suspended)*cores)) * 100) AS efficacy,
       IF((flags <![CDATA[ & ]]> 262144) = 0, 'yes', 'no') AS shared
     FROM audit
     WHERE
@@ -188,8 +188,8 @@
           COUNT(*) AS jobs,
           SUM(IF(executable LIKE '%.globus%', 1, 0)) AS grid_jobs,
           SUM(cores) AS total_cores,
-          TRUNCATE(SUM(IF(done>start, cores*(done-start), 0))/3600, 2) AS total_core_hours,
-          TRUNCATE(SUM(IF(done>start, IF(executable LIKE '%.globus%', cores*(done-start), 0),0))/3600, 2) AS total_grid_core_hours,
+          TRUNCATE(SUM(IF(done>start, cores*(done-start-suspended), 0))/3600, 2) AS total_core_hours,
+          TRUNCATE(SUM(IF(done>start, IF(executable LIKE '%.globus%', cores*(done-start-suspended), 0),0))/3600, 2) AS total_grid_core_hours,
           TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600, 2) AS total_waiting_time,
           TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600/count(*), 2) AS average_waiting_time
         FROM audit
@@ -277,7 +277,7 @@
         SUM(IF(executable LIKE '%.globus%', 1, 0)) AS grid_jobs,
 		TRUNCATE(SUM(IF(executable LIKE '%.globus%', IF(DONE>START, CORES*(DONE-START)/3600,0), 0)), 2) AS total_grid_core_hours,
         SUM(cores) AS total_cores,
-        TRUNCATE(SUM(IF(done>start, cores*(done-start), 0))/3600, 2) AS total_core_hours,
+        TRUNCATE(SUM(IF(done>start, cores*(done-start-suspended), 0))/3600, 2) AS total_core_hours,
         TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600, 2) AS total_waiting_time,
         TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600/count(*), 2) AS average_waiting_time
       FROM audit 
@@ -350,8 +350,8 @@
       SELECT 
         SUM(IF(jobtype='serial',1,0)) AS serial_jobs, 
         SUM(IF(jobtype='parallel',1,0)) AS parallel_jobs, 
-        TRUNCATE(SUM(IF(jobtype='serial' AND done>start, cores*(done-start), 0))/3600,2) AS serial_core_hours, 
-        TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start), 0))/3600,2) AS parallel_core_hours, 
+        TRUNCATE(SUM(IF(jobtype='serial' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS serial_core_hours, 
+        TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS parallel_core_hours, 
         (SUM(IF(start>qtime, (start-qtime), 0))/3600) AS tot_waiting_time,  
         COUNT(*) AS tot_jobs
       FROM audit  
@@ -405,8 +405,8 @@
         account AS project,
         SUM(IF(jobtype='serial',1,0)) AS serial_jobs, 
         SUM(IF(jobtype='parallel',1,0)) AS parallel_jobs, 
-        TRUNCATE(SUM(IF(jobtype='serial' AND done>start, cores*(done-start), 0))/3600,2) AS serial_core_hours, 
-        TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start), 0))/3600,2) AS parallel_core_hours, 
+        TRUNCATE(SUM(IF(jobtype='serial' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS serial_core_hours, 
+        TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS parallel_core_hours, 
         (SUM(IF(start>qtime, (start-qtime), 0))/3600) AS tot_waiting_time,  
         COUNT(*) AS tot_jobs
         FROM audit  
