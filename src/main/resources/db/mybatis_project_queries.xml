@@ -40,7 +40,9 @@
          WHERE propname='tuakiriSharedToken' AND 
                propvalue = #{sharedToken}
        )
-    WHERE hostInstitution = 'University of Auckland'
+    WHERE hostInstitution = 'University of Auckland' OR
+          hostInstitution = 'University of Otago' OR
+          hostInstitution = 'Landcare Research'
     ORDER BY projectCode
   </select>
 	
