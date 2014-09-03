@@ -85,24 +85,27 @@ public class StatisticsController {
         List<String> categories = new LinkedList<String>();
         categories.add("Researcher");
         if ((Boolean) request.getAttribute("showAdminView")) {
-            categories.add("Affiliation");
-            if (formData.getCategory().equals("Affiliation")) {
-                accountNames = this.getAccountNamesForAffiliation(request, formData);
-            } else {
+            if (!formData.getCategory().equals("Affiliation")) {
                 accountNames = this.getAccountNamesForResearcher(request, formData);
             }
             projectCodesForDropDown = this.projectDatabaseDao.getProjectCodes();
             fResearchersInDropDown = this.auditDatabaseDao.getUsers();
-            fAffil = this.auditDatabaseDao.getAffiliations();
             this.appendDummyUser(researchersForDropDown);
             researchersForDropDown.addAll(fResearchersInDropDown.get());
-            mav.addObject("affiliationsForDropDown", fAffil.get());
         } else {
             String sharedToken = (String) request.getAttribute("shared-token");
             accountNames = projectDatabaseDao.getResearcherAccountNamesForSharedToken(sharedToken);
             researchersForDropDown = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
             projectCodesForDropDown = this.projectDatabaseDao.getProjectCodesForSharedToken(sharedToken);
         }
+
+        categories.add("Affiliation");
+        if (formData.getCategory().equals("Affiliation")) {
+            accountNames = this.getAccountNamesForAffiliation(request, formData);
+            researcherList = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
+        }
+        fAffil = this.auditDatabaseDao.getAffiliations();
+        mav.addObject("affiliationsForDropDown", fAffil.get());
 
         if (projectCodesForDropDown != null && projectCodesForDropDown.size() > 0) {
             categories.add("Project");
