@@ -73,7 +73,7 @@
           $('#categoryChoice').empty().append(options[this.value.toLowerCase()]);
         });
 
-        $("#statistics").tablesorter({sortList:[[5,1]]});
+        $("#statistics").tablesorter({sortList:[[4,1]]});
       });
     </script>
   </head>
@@ -218,7 +218,7 @@
             <thead>
               <tr>
                 <th>User Name</th>
-                <th>User ID</th>
+                <!--<th>User ID</th>-->
                 <th>Jobs</th>
                 <th>Jobs (Grid)</th>
                 <th>Total Cores</th>
@@ -242,7 +242,7 @@
                       </script>
                     </div>
                   </td> 
-                  <td>${statistics.user}</td> 
+                  <!--<td>${statistics.user}</td>-->
                   <td align="right">${statistics.jobs}</td> 
                   <td align="right">${statistics.grid_jobs}</td> 
                   <td align="right">${statistics.total_cores}</td> 
