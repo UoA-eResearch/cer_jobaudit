@@ -114,9 +114,10 @@
       (done-start-suspended)*cores AS coretime,
       ROUND((utilisation/((done-start-suspended)*cores)) * 100) AS efficacy,
       IF((flags <![CDATA[ & ]]> 262144) = 0, 'yes', 'no') AS shared
-    FROM audit
+    FROM audit a
     INNER JOIN status_code sc
-    ON status = sc.code 
+    ON a.status = sc.code AND
+       a.machine = sc.machine
     WHERE
       user = #{accountName}
     ORDER BY ${orderby} ${sortorder}
