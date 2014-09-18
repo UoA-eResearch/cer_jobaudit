@@ -4,7 +4,7 @@ public class AuditRecord {
 
     private Long id;
     private Integer appstatus;
-    private Integer status;
+    private String status;
     private Integer cores;
     private Integer nodes;
     private String processors;
@@ -105,13 +105,13 @@ public class AuditRecord {
         this.account = account;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
 
         return status;
     }
 
     public void setStatus(
-            Integer status) {
+            String status) {
 
         this.status = status;
     }

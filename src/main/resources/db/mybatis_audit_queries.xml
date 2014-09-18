@@ -101,7 +101,7 @@
       nodes,
       processors,
       queue,
-      status,
+      sc.description as status,
       user,
       walltime,
       iwd AS workingdir,
@@ -115,6 +115,8 @@
       ROUND((utilisation/((done-start-suspended)*cores)) * 100) AS efficacy,
       IF((flags <![CDATA[ & ]]> 262144) = 0, 'yes', 'no') AS shared
     FROM audit
+    INNER JOIN status_code sc
+    ON status = sc.code 
     WHERE
       user = #{accountName}
     ORDER BY ${orderby} ${sortorder}
