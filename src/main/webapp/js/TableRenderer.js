@@ -48,14 +48,17 @@ function TableRenderer(divId, columnNames) {
     		    } else if (columnNames[j] == "nodes") {
     		    	var nodes = rowList[i][columnNames[j]];
     		        var machine_string = rowList[i]["processors"];
-    		        var machines = machine_string.split(",").sort();
-    		        var MAX_MACHINES = 5;
+    		        var machines = machine_string.split(",c").sort();
+    		        var MAX_MACHINES = 8;
     		        var tooltip = '';
     		        for (var k=0; k<machines.length; k++) {
-    		        	tooltip += machines[k] + '\n';
-    		        	if (k >= MAX_MACHINES-1) {
-    		        		break;
-    		        	}
+                            if (machines[k].charAt(0) != 'c') {
+                                machines[k] = 'c' + machines[k];
+                            }    
+    		            tooltip += machines[k] + '\n';
+    		            if (k >= MAX_MACHINES-1) {
+    		                break;
+    		            }
     		        }
     		        if (machines.length > MAX_MACHINES) {
     		        	tooltip += "...\n";
@@ -73,3 +76,4 @@ function TableRenderer(divId, columnNames) {
 
     
 }
+
