@@ -238,8 +238,11 @@
                         // Special chars like '.' have to be escaped with with two backslashes in jquery. 
                         // All users that don't have upis have usernames like <firstname>.<lastname> 
                         var selector = '#name-' + '${statistics.user}'.replace(/\./g,'\\.');
-                        $(selector).html("" + usermap['${statistics.user}']);
-                      </script>
+                        if (usermap['${statistics.user}'] === undefined) {
+                            $(selector).html("" + '${statistics.user}');
+                        } else {
+                            $(selector).html("" + usermap['${statistics.user}']);
+                        }                      </script>
                     </div>
                   </td> 
                   <!--<td>${statistics.user}</td>-->
