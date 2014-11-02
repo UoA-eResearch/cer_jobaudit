@@ -242,7 +242,8 @@
                             $(selector).html("" + '${statistics.user}');
                         } else {
                             $(selector).html("" + usermap['${statistics.user}']);
-                        }                      </script>
+                        }
+                      </script>
                     </div>
                   </td> 
                   <!--<td>${statistics.user}</td>-->
