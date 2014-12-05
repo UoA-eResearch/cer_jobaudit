@@ -106,7 +106,7 @@
             <c:set var="totalCoreHours" value="${totalCoreHours + statistics.total_core_hours}" />
           </c:forEach>
   
-          <table id="bordered">
+          <table>
             <tr>
               <td>Total number of jobs: <b>
                 <script type="text/javascript">
