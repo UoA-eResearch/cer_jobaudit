@@ -128,10 +128,8 @@
     SELECT
       user,
       SUM(jobs) AS jobs,
-      SUM(grid_jobs) AS grid_jobs,
       SUM(total_cores) AS total_cores,
       TRUNCATE(SUM(core_hours),2) AS total_core_hours,
-      TRUNCATE(SUM(total_grid_core_hours),2) AS total_grid_core_hours,
       TRUNCATE(SUM(waiting_time),2) AS total_waiting_time,
       (SUM(waiting_time)/SUM(jobs)) AS average_waiting_time 
     FROM audit_user_prev 
@@ -145,10 +143,8 @@
     SELECT 
       user ,
       SUM(jobs) AS jobs,
-      SUM(grid_jobs) AS grid_jobs,
         SUM(total_cores) AS total_cores,
         TRUNCATE(SUM(total_core_hours),2) AS total_core_hours,
-        TRUNCATE(SUM(total_grid_core_hours),2) AS total_grid_core_hours,
         TRUNCATE(SUM(total_waiting_time),2) AS total_waiting_time,
         AVG(average_waiting_time) AS average_waiting_time
       FROM
@@ -156,10 +152,8 @@
         SELECT
           user,
           SUM(jobs) AS jobs,
-          SUM(grid_jobs) AS grid_jobs,
           SUM(total_cores) AS total_cores,
           SUM(core_hours) AS total_core_hours,
-          SUM(total_grid_core_hours) AS total_grid_core_hours,
           SUM(waiting_time) AS total_waiting_time,
           (SUM(waiting_time)/SUM(jobs)) AS average_waiting_time
         FROM audit_user_prev 
@@ -172,10 +166,8 @@
         SELECT
           user, 
           COUNT(*) AS jobs,
-          SUM(IF(executable LIKE '%.globus%', 1, 0)) AS grid_jobs,
           SUM(cores) AS total_cores,
           TRUNCATE(SUM(core_hours), 2) AS total_core_hours,
-          TRUNCATE(SUM(IF(executable LIKE '%.globus%', core_hours, 0)), 2) AS total_grid_core_hours,
           TRUNCATE(SUM(waiting_time), 2) AS total_waiting_time,
           TRUNCATE(avg(waiting_time), 2) AS average_waiting_time
         FROM audit_user
@@ -189,10 +181,8 @@
         SELECT
           user,
           COUNT(*) AS jobs,
-          SUM(IF(executable LIKE '%.globus%', 1, 0)) AS grid_jobs,
           SUM(cores) AS total_cores,
           TRUNCATE(SUM(IF(done>start, cores*(done-start-suspended), 0))/3600, 2) AS total_core_hours,
-          TRUNCATE(SUM(IF(done>start, IF(executable LIKE '%.globus%', cores*(done-start-suspended), 0),0))/3600, 2) AS total_grid_core_hours,
           TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600, 2) AS total_waiting_time,
           TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600/count(*), 2) AS average_waiting_time
         FROM audit
@@ -211,8 +201,6 @@
     SELECT 
       user,
       SUM(jobs) AS jobs,
-      SUM(grid_jobs) AS grid_jobs,
-      SUM(total_grid_core_hours) AS total_grid_core_hours,
       SUM(total_cores) AS total_cores,
       TRUNCATE(SUM(core_hours),2) AS total_core_hours,
       TRUNCATE(SUM(waiting_time),2) AS total_waiting_time,
@@ -228,8 +216,6 @@
     SELECT 
       user ,
       SUM(jobs) AS jobs,
-      SUM(grid_jobs) AS grid_jobs,
-      SUM(total_grid_core_hours) AS total_grid_core_hours,
       SUM(total_cores) AS total_cores,
       TRUNCATE(SUM(total_core_hours),2) AS total_core_hours,
       TRUNCATE(SUM(total_waiting_time),2) AS total_waiting_time,
@@ -240,8 +226,6 @@
         user,
         project,
         SUM(jobs) AS jobs,
-        SUM(grid_jobs) AS grid_jobs,
-      	SUM(total_grid_core_hours) AS total_grid_core_hours,
         SUM(total_cores) AS total_cores,
         SUM(core_hours) AS total_core_hours,
         SUM(waiting_time) AS total_waiting_time,
@@ -258,8 +242,6 @@
         user, 
         project,
         COUNT(*) AS jobs,
-        SUM(grid_jobs) AS grid_jobs,
-      	TRUNCATE(SUM(total_grid_core_hours), 2) AS total_grid_core_hours,
         SUM(cores) AS total_cores,
         TRUNCATE(SUM(core_hours), 2) AS total_core_hours,
         TRUNCATE(SUM(waiting_time), 2) AS total_waiting_time,
@@ -277,8 +259,6 @@
         user,
         account AS project,
         COUNT(*) AS jobs,
-        SUM(IF(executable LIKE '%.globus%', 1, 0)) AS grid_jobs,
-		TRUNCATE(SUM(IF(executable LIKE '%.globus%', IF(DONE>START, CORES*(DONE-START)/3600,0), 0)), 2) AS total_grid_core_hours,
         SUM(cores) AS total_cores,
         TRUNCATE(SUM(IF(done>start, cores*(done-start-suspended), 0))/3600, 2) AS total_core_hours,
         TRUNCATE(SUM(IF(start>qtime, (start-qtime), 0))/3600, 2) AS total_waiting_time,

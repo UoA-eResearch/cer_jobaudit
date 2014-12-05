@@ -7,12 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.ac.auckland.cer.jobaudit.dao.AuditDatabaseDao;
-import nz.ac.auckland.cer.jobaudit.dao.ProjectDatabaseDao;
 import nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics;
 import nz.ac.auckland.cer.jobaudit.pojo.StatisticsFormData;
 import nz.ac.auckland.cer.jobaudit.pojo.User;
@@ -27,16 +25,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 //FIXME: Set up safety net for unexpected exceptions
 @Controller
-public class StatisticsController {
+public class SimpleStatisticsController {
 
-    private Logger log = Logger.getLogger("StatisticsController.class");
+    private Logger log = Logger.getLogger("SimpleStatisticsController.class");
     private Map<Integer, String> MONTHS;
     private AuditDatabaseDao auditDatabaseDao;
-    private ProjectDatabaseDao projectDatabaseDao;
     private Integer historyFirstYear;
     private Integer historyFirstMonth;
 
-    public StatisticsController() {
+    public SimpleStatisticsController() {
 
         // initialize months
         this.MONTHS = new HashMap<Integer, String>();
@@ -46,7 +43,7 @@ public class StatisticsController {
         }
     }
 
-    @RequestMapping(value = "statistics", method = RequestMethod.GET)
+    @RequestMapping(value = "simplestatistics", method = RequestMethod.GET)
     public ModelAndView onGet(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -60,7 +57,6 @@ public class StatisticsController {
             formData.setFirstYear(this.historyFirstYear);
             formData.setLastMonth(now.get(Calendar.MONTH));
             formData.setLastYear(now.get(Calendar.YEAR));
-            formData.setCategory("Researcher");            
         }
         return this.handleRequest(request, formData);
     }
@@ -69,112 +65,49 @@ public class StatisticsController {
             HttpServletRequest request,
             StatisticsFormData formData) throws Exception {
 
-        ModelAndView mav = new ModelAndView("statistics");
-        Future<List<User>> fResearchersInDropDown = null;
+        ModelAndView mav = new ModelAndView("simplestatistics");
         Future<List<String>> fAffil = null;
         List<UserStatistics> userstatslist = new LinkedList<UserStatistics>();
         List<Future<BarDiagramStatistics>> fbdslist = new LinkedList<Future<BarDiagramStatistics>>();
         List<BarDiagramStatistics> bdslist = new LinkedList<BarDiagramStatistics>();
         List<User> researcherList = new LinkedList<User>();
-        List<User> researchersForDropDown = new LinkedList<User>();
-        List<String> projectCodesForDropDown = null;
         List<String> accountNames = null;
         List<String> affiliations = null;
         Calendar from = Calendar.getInstance();
         Calendar to = Calendar.getInstance();
 
-        // initialize categories
-        List<String> categories = new LinkedList<String>();
-        categories.add("Researcher");
-        if ((Boolean) request.getAttribute("showAdminView")) {
-            if (!formData.getCategory().equals("Affiliation")) {
-                accountNames = this.getAccountNamesForResearcher(request, formData);
-            }
-            projectCodesForDropDown = this.projectDatabaseDao.getProjectCodes();
-            fResearchersInDropDown = this.auditDatabaseDao.getUsers();
-            this.appendDummyUser(researchersForDropDown);
-            researchersForDropDown.addAll(fResearchersInDropDown.get());
-        } else {
-            String sharedToken = (String) request.getAttribute("shared-token");
-            accountNames = projectDatabaseDao.getResearcherAccountNamesForSharedToken(sharedToken);
-            researchersForDropDown = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
-            projectCodesForDropDown = this.projectDatabaseDao.getProjectCodesForSharedToken(sharedToken);
-        }
-
-        categories.add("Affiliation");
-        if (formData.getCategory().equals("Affiliation")) {
-        	if (formData.getCategoryChoice().equals("All")) {
-                accountNames = this.auditDatabaseDao.getAccountNames("" + (from.getTimeInMillis() / 1000),
+        if (formData.getCategoryChoice() == null || formData.getCategoryChoice().equals("All")) {
+            accountNames = this.auditDatabaseDao.getAccountNames("" + (from.getTimeInMillis() / 1000),
                     "" + (to.getTimeInMillis() / 1000)).get();
-        	} else {
-                accountNames = this.getAccountNamesForAffiliation(request, formData);
-        	}
-            researcherList = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
+        } else {
+            accountNames = this.getAccountNamesForAffiliation(request, formData);    
         }
+        researcherList = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
+
         fAffil = this.auditDatabaseDao.getAffiliations();
         affiliations = fAffil.get();
         affiliations.add(0, "All");
-        
-        if (projectCodesForDropDown != null && projectCodesForDropDown.size() > 0) {
-            categories.add("Project");
-        }
+
         from.set(formData.getFirstYear(), formData.getFirstMonth(), 1, 0, 0, 0);
         to.set(formData.getLastYear(), formData.getLastMonth() + 1, 1, 0, 0, 0);
 
-        if (formData.getCategory().equals("Project")) {
-            String projectCode = formData.getCategoryChoice().split(":")[0];
-            userstatslist = this.auditDatabaseDao.getStatisticsForProject(projectCode, from, to);
-            List<String> tmp = new LinkedList<String>();
-            for (UserStatistics us : userstatslist) {
-                tmp.add(us.getUser());
-            }
-            researcherList = this.auditDatabaseDao.getUsersForAccountNames(tmp);
-            fbdslist = auditDatabaseDao.getProjectStats(projectCode, formData.getFirstYear(), formData.getFirstMonth(),
-                    formData.getLastYear(), formData.getLastMonth());
-        } else {
-            userstatslist = this.auditDatabaseDao.getStatisticsForAccountNames(accountNames, from, to);
-            bdslist = new LinkedList<BarDiagramStatistics>();
-            fbdslist = this.auditDatabaseDao.getBarDiagramAccountNamesStatistics(accountNames, formData.getFirstYear(),
+        userstatslist = this.auditDatabaseDao.getStatisticsForAccountNames(accountNames, from, to);
+        fbdslist = this.auditDatabaseDao.getBarDiagramAccountNamesStatistics(accountNames, formData.getFirstYear(),
                     formData.getFirstMonth(), formData.getLastYear(), formData.getLastMonth());
-        }
 
         for (Future<BarDiagramStatistics> fbds : fbdslist) {
             bdslist.add(fbds.get());
         }
 
         mav.addObject("affiliationsForDropDown", affiliations);
-        mav.addObject("researchersForDropDown", researchersForDropDown);
-        mav.addObject("projectCodesForDropDown", projectCodesForDropDown);
         mav.addObject("monthsForDropDown", this.MONTHS);
         mav.addObject("yearsForDropDown", this.createYearList());
-        mav.addObject("categoriesForDropDown", categories);
-        mav.addObject("researcherList", researcherList);
         mav.addObject("userStatistics", userstatslist);
+        mav.addObject("researcherList", researcherList);
         mav.addObject("jobStatistics", bdslist);
         mav.addObject("formData", formData);
         mav.addObject("cn", request.getAttribute("cn"));
         return mav;
-    }
-
-    private List<String> getAccountNamesForResearcher(
-            HttpServletRequest req,
-            StatisticsFormData formData) throws Exception {
-
-        List<String> users = new LinkedList<String>();
-        String user = formData.getCategoryChoice();
-        if (user != null && !(user.equalsIgnoreCase("all"))) {
-            users.add(user);
-        } else {
-            Calendar from = Calendar.getInstance();
-            Calendar to = Calendar.getInstance();
-            from.set(formData.getFirstYear(), formData.getFirstMonth(), 1, 0, 0, 0);
-            to.set(formData.getLastYear(), formData.getLastMonth() + 1, 1, 0, 0, 0);
-
-            // list of all user names
-            users.addAll(this.auditDatabaseDao.getAccountNames("" + (from.getTimeInMillis() / 1000),
-                    "" + (to.getTimeInMillis() / 1000)).get());
-        }
-        return users;
     }
 
     private List<String> getAccountNamesForAffiliation(
@@ -218,21 +151,6 @@ public class StatisticsController {
             years.add(i);
         }
         return years;
-    }
-
-    private void appendDummyUser(
-            List<User> l) {
-
-        User u = new User();
-        u.setId("all");
-        u.setName("All");
-        l.add(0, u);
-    }
-
-    public void setProjectDatabaseDao(
-            ProjectDatabaseDao projectDatabaseDao) {
-
-        this.projectDatabaseDao = projectDatabaseDao;
     }
 
     public void setAuditDatabaseDao(

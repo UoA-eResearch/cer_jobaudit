@@ -29,8 +29,6 @@ AS
   SELECT
     user AS user,
     cores AS cores,
-    IF(executable LIKE '%.globus%', 1, 0) AS grid_jobs,
-    IF(executable LIKE '%.globus%', IF(DONE>START, CORES*(DONE-START)/3600,0), 0) AS total_grid_core_hours,
     account AS project,
     jobtype AS jobtype,
     done AS done,

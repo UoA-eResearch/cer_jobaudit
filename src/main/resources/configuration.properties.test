@@ -1,0 +1,20 @@
+# Database configuration
+audit.jdbc.driver.className=com.mysql.jdbc.Driver
+audit.jdbc.url=jdbc:mysql://mysql-bg.ceres.auckland.ac.nz:3306/pandora_audit
+audit.jdbc.username=tmpaudit
+audit.jdbc.password=abc123eqwerqer8qwerqrqfaz
+
+project.jdbc.driver.className=com.mysql.jdbc.Driver
+project.jdbc.url=jdbc:mysql://mysql-bg.ceres.auckland.ac.nz:3306/project_management
+project.jdbc.username=tmpproject
+project.jdbc.password=adf766a876sdfadffa99asdfaf
+
+test.identity.properties.path=file:/etc/cer_portal_test_identity.properties
+
+# How many audit records are shown on a page
+display.max.jobrecords.per.page=100
+
+#default selections for the time-period-selection dropdowns (months' numbering starts from 0) 
+history.first.year=2012
+history.first.month=0
+

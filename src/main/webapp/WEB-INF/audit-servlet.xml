@@ -24,6 +24,11 @@
     <property name="historyFirstYear" value="${history.first.year}"/>
     <property name="historyFirstMonth" value="${history.first.month}"/>
   </bean>
+  <bean id="simpleStatisticsController" class="nz.ac.auckland.cer.jobaudit.controller.SimpleStatisticsController">
+    <property name="auditDatabaseDao" ref="auditDatabaseDao"/>
+    <property name="historyFirstYear" value="${history.first.year}"/>
+    <property name="historyFirstMonth" value="${history.first.month}"/>
+  </bean>
   <bean id="auditRecordController" class="nz.ac.auckland.cer.jobaudit.controller.AuditRecordController">
     <property name="projectDatabaseDao" ref="projectDatabaseDao"/>
     <property name="auditDatabaseDao" ref="auditDatabaseDao"/>

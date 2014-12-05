@@ -25,54 +25,20 @@
       var usermap = new Array();
     
       // set up structure to map account names to real names 
-      <c:forEach items="${researchersForDropDown}" var="tmp">
-        usermap["${tmp.id}"] = "${tmp.name}";
-      </c:forEach>
       <c:forEach items="${researcherList}" var="tmp">
         usermap["${tmp.id}"] = "${tmp.name}";
       </c:forEach>
-
-      // set up options in the drop down menues for the different categories 
-      var options = { 'researcher': '', 'project': '', 'affiliation': '' };      
-      <c:choose>
-        <c:when test="${empty researchersForDropDown}">
-          options['researcher'] += "<option value='__dummy__'>${cn}</option>";          
-        </c:when>
-        <c:otherwise>
-          <c:forEach items="${researchersForDropDown}" var="tmp">
-            if ("${tmp.id}" == "${formData.categoryChoice}") {
-              options['researcher'] += "<option value='${tmp.id}' selected=\"selected\">${tmp.name}</option>";
-            } else {
-              options['researcher'] += "<option value='${tmp.id}'>${tmp.name}</option>";
-            }
-          </c:forEach>  
-        </c:otherwise>
-      </c:choose>
       
-      <c:forEach items="${projectCodesForDropDown}" var="tmp">
-        if ("${tmp}" == "${formData.categoryChoice}") {
-          options['project'] += "<option value='${tmp}' selected=\"selected\">${tmp}</option>";
-        } else {
-          options['project'] += "<option value='${tmp}'>${tmp}</option>";
-        }
-      </c:forEach>
-    
+      var affil_opts = '';
       <c:forEach items="${affiliationsForDropDown}" var="tmp">
         if ("${tmp}" == "${formData.categoryChoice}") {
-          options['affiliation'] += "<option value='${tmp}' selected=\"selected\">${tmp}</option>";        
+            affil_opts += "<option value='${tmp}' selected=\"selected\">${tmp}</option>";        
         } else {
-          options['affiliation'] += "<option value='${tmp}'>${tmp}</option>";
+            affil_opts += "<option value='${tmp}'>${tmp}</option>";
         }
       </c:forEach>
 
       $(document).ready(function() {
-        // set the right choices depending on the selection of the category select 
-        $('#categoryChoice').empty().append(options[$('#category').val().toLowerCase()]);
-        // when the category select changes value, adjust the values in the categoryChoice select 
-        $('#category').change(function() {
-          $('#categoryChoice').empty().append(options[this.value.toLowerCase()]);
-        });
-
         $("#statistics").tablesorter({sortList:[[3,1]]});
       });
     </script>
@@ -83,9 +49,8 @@
 
       <!-- define the request -->
       <form:form id="form" method="get" modelAttribute="formData" commandName="formData">
-        <b>Get statistics for</b>
-        <form:select id="category" path="category" items="${categoriesForDropDown}" />
-        <form:select id="categoryChoice" path="categoryChoice" />
+        <b>Get statistics for affiliation</b>
+        <form:select path="categoryChoice" items="${affiliationsForDropDown}"/>
         <b>from</b>
         <form:select path="firstMonth" items="${monthsForDropDown}" />
         <form:select path="firstYear" items="${yearsForDropDown}" />
