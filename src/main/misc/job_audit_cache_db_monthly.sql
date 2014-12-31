@@ -18,7 +18,7 @@ AS
     SUM(IF(jobtype='serial',1,0)) AS serial_jobs,
     SUM(IF(jobtype='parallel',1,0)) AS parallel_jobs,
     TRUNCATE(SUM(IF(jobtype='serial' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS serial_core_hours,
-    TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS parallel_core_hours,
+    TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS parallel_core_hours
   FROM audit 
   WHERE done<UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH) + INTERVAL 1 DAY)
   GROUP BY user, year, month;
