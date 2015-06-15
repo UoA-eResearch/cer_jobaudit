@@ -39,6 +39,7 @@ AS
     (account LIKE 'nesi%' OR
      account LIKE 'uoa%' OR
      account LIKE 'uoo%' OR
+     account LIKE 'massey%' OR
      account LIKE 'landcare%') AND
     done>UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH));
 

@@ -47,6 +47,7 @@ AS
     ( account LIKE 'nesi%' OR
       account LIKE 'uoa%' OR
       account LIKE 'uoo%' OR
+      account LIKE 'massey%' OR
       account LIKE 'landcare%'
     )
   GROUP BY project, user, year, month;

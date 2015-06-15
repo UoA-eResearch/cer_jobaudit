@@ -17,6 +17,7 @@
       projectCode LIKE 'nesi%' OR
       projectCode LIKE 'uoa%' OR
       projectCode LIKE 'uoo%' OR
+      projectCode LIKE 'massey%' OR
       projectCode LIKE 'landcare%'
     ORDER BY projectCode
   </select>
