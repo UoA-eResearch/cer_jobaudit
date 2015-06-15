@@ -220,11 +220,11 @@
                     </div>
                   </td> 
                   <!--<td>${statistics.user}</td>-->
-                  <td align="right">${statistics.jobs}</td>
-                  <td align="right">${statistics.total_cores}</td> 
-                  <td align="right">${statistics.total_core_hours}</td>
-                  <td align="right">${statistics.total_waiting_time}</td>
-                  <td align="right"><fmt:formatNumber value="${avgWaitingTime}" type="Number" maxFractionDigits="2"/></td>
+                  <td align="center">${statistics.jobs}</td>
+                  <td align="center">${statistics.total_cores}</td> 
+                  <td align="center">${statistics.total_core_hours}</td>
+                  <td align="center">${statistics.total_waiting_time}</td>
+                  <td align="center"><fmt:formatNumber value="${avgWaitingTime}" type="Number" maxFractionDigits="2"/></td>
                 </tr>
               </c:forEach>
             </tbody>
