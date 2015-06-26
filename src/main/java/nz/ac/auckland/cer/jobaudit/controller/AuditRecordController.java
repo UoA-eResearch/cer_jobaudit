@@ -10,8 +10,8 @@ import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.ac.auckland.cer.jobaudit.dao.AuditDatabaseDao;
-import nz.ac.auckland.cer.jobaudit.dao.ProjectDatabaseDao;
+import nz.ac.auckland.cer.common.db.project.dao.ProjectDbDao;
+import nz.ac.auckland.cer.jobaudit.dao.AuditDbDao;
 import nz.ac.auckland.cer.jobaudit.pojo.AuditRecord;
 import nz.ac.auckland.cer.jobaudit.pojo.AuditRecordFormData;
 import nz.ac.auckland.cer.jobaudit.pojo.User;
@@ -28,8 +28,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class AuditRecordController {
 
-    private AuditDatabaseDao auditDatabaseDao;
-    private ProjectDatabaseDao projectDatabaseDao;
+    private AuditDbDao auditDbDao;
+    private ProjectDbDao projectDbDao;
     private long maxJobRecordsPerPage;
     private List<String> allowedOrderBys;
 
@@ -54,7 +54,7 @@ public class AuditRecordController {
             formData = new AuditRecordFormData();
             String sharedToken = (String) request.getAttribute("shared-token");
             // FIXME: handle situation when requester doesn't have a cluster account
-            List<String> accountNames = projectDatabaseDao.getResearcherOrAdviserAccountNamesForSharedToken(sharedToken);
+            List<String> accountNames = projectDbDao.getResearcherOrAdviserAccountNamesForSharedToken(sharedToken);
             if (accountNames != null && accountNames.size() > 0) {
                 formData.setAccountName(accountNames.get(0));            
             } else {
@@ -72,16 +72,16 @@ public class AuditRecordController {
 
         ModelAndView mav = new ModelAndView("auditrecords");
         Future<List<User>> fUsers = null;
-        Future<Integer> fnr = this.auditDatabaseDao.getNumberRecords(formData.getAccountName());
+        Future<Integer> fnr = this.auditDbDao.getNumberRecords(formData.getAccountName());
         if ((Boolean) request.getAttribute("showAdminView")) {
-            fUsers = this.auditDatabaseDao.getUsers();
+            fUsers = this.auditDbDao.getUsers();
             mav.addObject("accountName", formData.getAccountName());
             mav.addObject("researchersInDropDown", this.createResearcherDropDownMap(request, fUsers.get()));
         } else {
             String sharedToken = (String) request.getAttribute("shared-token");
-            List<String> accountNames = projectDatabaseDao
+            List<String> accountNames = projectDbDao
                     .getResearcherOrAdviserAccountNamesForSharedToken(sharedToken);
-            List<User> users = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
+            List<User> users = this.auditDbDao.getUsersForAccountNames(accountNames);
             mav.addObject("researchersInDropDown", this.createResearcherDropDownMap(request, users));
         }
         mav.addObject("totalNumberRecords", fnr.get());
@@ -118,7 +118,7 @@ public class AuditRecordController {
         }
         // FIXME: verify requester doesn't ask for records for any other than
         // his own account, unless admin
-        return this.auditDatabaseDao.getRecords(accountName, orderby, sortorder, offset, maxJobRecordsPerPage).get();
+        return this.auditDbDao.getRecords(accountName, orderby, sortorder, offset, maxJobRecordsPerPage).get();
     }
 
     private Map<String, String> createResearcherDropDownMap(
@@ -144,10 +144,10 @@ public class AuditRecordController {
         return tmp;
     }
 
-    public void setAuditDatabaseDao(
-            AuditDatabaseDao auditDatabaseDao) {
+    public void setAuditDbDao(
+            AuditDbDao auditDbDao) {
 
-        this.auditDatabaseDao = auditDatabaseDao;
+        this.auditDbDao = auditDbDao;
     }
 
     public void setMaxJobRecordsPerPage(
@@ -156,10 +156,10 @@ public class AuditRecordController {
         this.maxJobRecordsPerPage = maxJobRecordsPerPage;
     }
 
-    public void setProjectDatabaseDao(
-            ProjectDatabaseDao projectDatabaseDao) {
+    public void setProjectDbDao(
+            ProjectDbDao projectDbDao) {
 
-        this.projectDatabaseDao = projectDatabaseDao;
+        this.projectDbDao = projectDbDao;
     }
 
 }

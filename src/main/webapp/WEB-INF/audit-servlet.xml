@@ -19,19 +19,19 @@
 
   <!-- Controllers -->
   <bean id="statisticsController" class="nz.ac.auckland.cer.jobaudit.controller.StatisticsController">
-    <property name="projectDatabaseDao" ref="projectDatabaseDao"/>
-	<property name="auditDatabaseDao" ref="auditDatabaseDao"/>
+    <property name="projectDbDao" ref="projectDbDao"/>
+	<property name="auditDbDao" ref="auditDbDao"/>
     <property name="historyFirstYear" value="${history.first.year}"/>
     <property name="historyFirstMonth" value="${history.first.month}"/>
   </bean>
   <bean id="simpleStatisticsController" class="nz.ac.auckland.cer.jobaudit.controller.SimpleStatisticsController">
-    <property name="auditDatabaseDao" ref="auditDatabaseDao"/>
+	<property name="auditDbDao" ref="auditDbDao"/>
     <property name="historyFirstYear" value="${history.first.year}"/>
     <property name="historyFirstMonth" value="${history.first.month}"/>
   </bean>
   <bean id="auditRecordController" class="nz.ac.auckland.cer.jobaudit.controller.AuditRecordController">
-    <property name="projectDatabaseDao" ref="projectDatabaseDao"/>
-    <property name="auditDatabaseDao" ref="auditDatabaseDao"/>
+    <property name="projectDbDao" ref="projectDbDao"/>
+	<property name="auditDbDao" ref="auditDbDao"/>
     <property name="maxJobRecordsPerPage" value="${display.max.jobrecords.per.page}"/>
   </bean>
 
@@ -41,11 +41,11 @@
   </bean>
 
   <bean id="AdminFilter" class="nz.ac.auckland.cer.jobaudit.filter.AdminFilter">
-    <property name="auditDatabaseDao" ref="auditDatabaseDao"/>
-    <property name="projectDatabaseDao" ref="projectDatabaseDao"/>
+    <property name="auditDbDao" ref="auditDbDao"/>
+    <property name="projectDbDao" ref="projectDbDao"/>
   </bean>
 
-  <bean id="IdentityInterceptor" class="nz.ac.auckland.cer.jobaudit.filter.IdentityInterceptor">
+  <bean id="IdentityInterceptor" class="nz.ac.auckland.cer.common.filter.IdentityInterceptor">
     <property name="idResource" value="${test.identity.properties.path}"/>
   </bean>
 

@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.ac.auckland.cer.jobaudit.dao.AuditDatabaseDao;
+import nz.ac.auckland.cer.jobaudit.dao.AuditDbDao;
 import nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics;
 import nz.ac.auckland.cer.jobaudit.pojo.StatisticsFormData;
 import nz.ac.auckland.cer.jobaudit.pojo.User;
@@ -29,7 +29,7 @@ public class SimpleStatisticsController {
 
     private Logger log = Logger.getLogger("SimpleStatisticsController.class");
     private Map<Integer, String> MONTHS;
-    private AuditDatabaseDao auditDatabaseDao;
+    private AuditDbDao auditDbDao;
     private Integer historyFirstYear;
     private Integer historyFirstMonth;
 
@@ -77,22 +77,22 @@ public class SimpleStatisticsController {
         Calendar to = Calendar.getInstance();
 
         if (formData.getCategoryChoice() == null || formData.getCategoryChoice().equals("All")) {
-            accountNames = this.auditDatabaseDao.getAccountNames("" + (from.getTimeInMillis() / 1000),
+            accountNames = this.auditDbDao.getAccountNames("" + (from.getTimeInMillis() / 1000),
                     "" + (to.getTimeInMillis() / 1000)).get();
         } else {
             accountNames = this.getAccountNamesForAffiliation(request, formData);    
         }
-        researcherList = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
+        researcherList = this.auditDbDao.getUsersForAccountNames(accountNames);
 
-        fAffil = this.auditDatabaseDao.getAffiliations();
+        fAffil = this.auditDbDao.getAuditAffiliations();
         affiliations = fAffil.get();
         affiliations.add(0, "All");
 
         from.set(formData.getFirstYear(), formData.getFirstMonth(), 1, 0, 0, 0);
         to.set(formData.getLastYear(), formData.getLastMonth() + 1, 1, 0, 0, 0);
 
-        userstatslist = this.auditDatabaseDao.getStatisticsForAccountNames(accountNames, from, to);
-        fbdslist = this.auditDatabaseDao.getBarDiagramAccountNamesStatistics(accountNames, formData.getFirstYear(),
+        userstatslist = this.auditDbDao.getStatisticsForAccountNames(accountNames, from, to);
+        fbdslist = this.auditDbDao.getBarDiagramAccountNamesStatistics(accountNames, formData.getFirstYear(),
                     formData.getFirstMonth(), formData.getLastYear(), formData.getLastMonth());
 
         for (Future<BarDiagramStatistics> fbds : fbdslist) {
@@ -122,15 +122,15 @@ public class SimpleStatisticsController {
         to.set(formData.getLastYear(), formData.getLastMonth() + 1, 1, 0, 0, 0);
         String affil = formData.getCategoryChoice();
         String[] subs = affil.split("/");
-        List<String> usersWithAtLeastOneJob = this.auditDatabaseDao.getAccountNames(
+        List<String> usersWithAtLeastOneJob = this.auditDbDao.getAccountNames(
                 "" + (from.getTimeInMillis() / 1000), "" + (to.getTimeInMillis() / 1000)).get();
 
         if (StringUtils.countMatches(affil, "/") == 1) {
-            fuserlist = this.auditDatabaseDao.getAccountNamesForAffiliation(subs[1].trim());
+            fuserlist = this.auditDbDao.getAccountNamesForAffiliation(subs[1].trim());
         } else if (StringUtils.countMatches(affil, "/") == 2) {
-            fuserlist = this.auditDatabaseDao.getAccountNamesForAffiliation(subs[1].trim(), subs[2].trim());
+            fuserlist = this.auditDbDao.getAccountNamesForAffiliation(subs[1].trim(), subs[2].trim());
         } else if (StringUtils.countMatches(affil, "/") == 3) {
-            fuserlist = this.auditDatabaseDao.getAccountNamesForAffiliation(subs[1].trim(), subs[2].trim(),
+            fuserlist = this.auditDbDao.getAccountNamesForAffiliation(subs[1].trim(), subs[2].trim(),
                     subs[3].trim());
         } else {
             throw new Exception("Unexpected affilation string: " + affil);
@@ -153,10 +153,10 @@ public class SimpleStatisticsController {
         return years;
     }
 
-    public void setAuditDatabaseDao(
-            AuditDatabaseDao auditDatabaseDao) {
+    public void setAuditDbDao(
+            AuditDbDao auditDbDao) {
 
-        this.auditDatabaseDao = auditDatabaseDao;
+        this.auditDbDao = auditDbDao;
     }
 
     public void setHistoryFirstYear(

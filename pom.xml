@@ -8,7 +8,7 @@
   <description>Web-based interface to view records and statistics of the audit database of the Auckland NeSI cluster</description>
   <packaging>war</packaging>
   <properties>
-    <spring.version>3.2.8.RELEASE</spring.version>
+    <spring.version>4.1.6.RELEASE</spring.version>
     <maven.compiler.target>1.6</maven.compiler.target>
     <maven.compiler.source>1.6</maven.compiler.source>
   </properties>
@@ -125,16 +125,16 @@
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
       <version>1.2</version>
       <type>jar</type>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <type>jar</type>
     </dependency>
     <!-- FIXME: javax.ws.rs really needed? -->
     <dependency>
@@ -239,6 +239,12 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+        <groupId>nz.ac.auckland.cer</groupId>
+        <artifactId>cer-common</artifactId>
+        <version>0.1</version>
+        <scope>compile</scope>
+    </dependency>
   </dependencies>
   
   <pluginRepositories>
@@ -265,6 +271,11 @@
       <id>spring-maven-milestone</id>
       <name>Springframework Maven Repository</name>
       <url>http://s3.amazonaws.com/maven.springframework.org/milestone</url>
+    </repository>
+    <repository>
+      <id>code-nesi</id>
+      <name>NeSI repository</name>
+      <url>http://code.nesi.org.nz/nexus/content/repositories/releases/</url>
     </repository>
   </repositories>
 </project>

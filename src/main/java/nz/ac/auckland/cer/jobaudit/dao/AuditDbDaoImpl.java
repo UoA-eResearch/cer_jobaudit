@@ -23,7 +23,7 @@ import nz.ac.auckland.cer.jobaudit.util.UserComparator;
 import org.apache.log4j.Logger;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 
-public class IBatisAuditDatabaseDao extends SqlSessionDaoSupport implements AuditDatabaseDao {
+public class AuditDbDaoImpl extends SqlSessionDaoSupport implements AuditDbDao {
 
     private ExecutorService executorService;
     Logger log = Logger.getLogger(Thread.currentThread().getClass());
@@ -145,12 +145,12 @@ public class IBatisAuditDatabaseDao extends SqlSessionDaoSupport implements Audi
         });
     }
 
-    public Future<List<String>> getAffiliations() throws Exception {
+    public Future<List<String>> getAuditAffiliations() throws Exception {
 
         return this.executorService.submit(new Callable<List<String>>() {
             public List<String> call() throws Exception {
 
-                List<Affiliation> tmp = getSqlSession().selectList("getAffiliations");
+                List<Affiliation> tmp = getSqlSession().selectList("getAuditAffiliations");
                 Set<String> affiliations = new HashSet<String>();
                 for (Affiliation a : tmp) {
                     StringBuffer affil = new StringBuffer("");

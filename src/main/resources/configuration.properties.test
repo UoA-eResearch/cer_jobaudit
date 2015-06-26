@@ -1,13 +1,13 @@
 # Database configuration
 audit.jdbc.driver.className=com.mysql.jdbc.Driver
-audit.jdbc.url=jdbc:mysql://mysql-bg.ceres.auckland.ac.nz:3306/pandora_audit
-audit.jdbc.username=tmpaudit
-audit.jdbc.password=abc123eqwerqer8qwerqrqfaz
+audit.jdbc.url=jdbc:mysql://localhost:3306/pandora_audit
+audit.jdbc.username=certest
+audit.jdbc.password=c3ntr3f0r3r3s3arch
 
 project.jdbc.driver.className=com.mysql.jdbc.Driver
-project.jdbc.url=jdbc:mysql://mysql-bg.ceres.auckland.ac.nz:3306/project_management
-project.jdbc.username=tmpproject
-project.jdbc.password=adf766a876sdfadffa99asdfaf
+project.jdbc.url=jdbc:mysql://projects.test.nesi.org.nz:3306/projectdb
+project.jdbc.username=certest
+project.jdbc.password=c3ntr3f0r3r3s3arch
 
 test.identity.properties.path=file:/etc/cer_portal_test_identity.properties
 

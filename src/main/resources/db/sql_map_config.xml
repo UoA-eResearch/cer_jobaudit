@@ -3,6 +3,6 @@
 <configuration>
   <mappers>
     <mapper resource="db/mybatis_audit_queries.xml"/>
-    <mapper resource="db/mybatis_project_queries.xml"/>
+    <mapper resource="nz/ac/auckland/cer/common/db/project/mybatis_queries.xml"/>
   </mappers>
 </configuration>

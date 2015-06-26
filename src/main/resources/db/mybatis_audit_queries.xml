@@ -33,7 +33,7 @@
   </select>
 
   <!-- get list of all possible affilations -->
-  <select id="getAffiliations" resultType="nz.ac.auckland.cer.jobaudit.pojo.Affiliation">
+  <select id="getAuditAffiliations" resultType="nz.ac.auckland.cer.jobaudit.pojo.Affiliation">
     SELECT DISTINCT
       code, 
       dept1, 

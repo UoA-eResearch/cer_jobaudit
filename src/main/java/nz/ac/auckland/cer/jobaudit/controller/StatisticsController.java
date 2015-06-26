@@ -11,8 +11,8 @@ import java.util.concurrent.Future;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.ac.auckland.cer.jobaudit.dao.AuditDatabaseDao;
-import nz.ac.auckland.cer.jobaudit.dao.ProjectDatabaseDao;
+import nz.ac.auckland.cer.common.db.project.dao.ProjectDbDao;
+import nz.ac.auckland.cer.jobaudit.dao.AuditDbDao;
 import nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics;
 import nz.ac.auckland.cer.jobaudit.pojo.StatisticsFormData;
 import nz.ac.auckland.cer.jobaudit.pojo.User;
@@ -31,8 +31,8 @@ public class StatisticsController {
 
     private Logger log = Logger.getLogger("StatisticsController.class");
     private Map<Integer, String> MONTHS;
-    private AuditDatabaseDao auditDatabaseDao;
-    private ProjectDatabaseDao projectDatabaseDao;
+    private AuditDbDao auditDbDao;
+    private ProjectDbDao projectDbDao;
     private Integer historyFirstYear;
     private Integer historyFirstMonth;
 
@@ -90,32 +90,32 @@ public class StatisticsController {
             if (!formData.getCategory().equals("Affiliation")) {
                 accountNames = this.getAccountNamesForResearcher(request, formData);
             }
-            projectCodesForDropDown = this.projectDatabaseDao.getProjectCodes();
-            fResearchersInDropDown = this.auditDatabaseDao.getUsers();
+            projectCodesForDropDown = this.projectDbDao.getProjectCodes();
+            fResearchersInDropDown = this.auditDbDao.getUsers();
             this.appendDummyUser(researchersForDropDown);
             researchersForDropDown.addAll(fResearchersInDropDown.get());
         } else {
             String sharedToken = (String) request.getAttribute("shared-token");
-            accountNames = projectDatabaseDao.getResearcherAccountNamesForSharedToken(sharedToken);
-            researchersForDropDown = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
-            projectCodesForDropDown = this.projectDatabaseDao.getProjectCodesForSharedToken(sharedToken);
+            accountNames = projectDbDao.getResearcherAccountNamesForSharedToken(sharedToken);
+            researchersForDropDown = this.auditDbDao.getUsersForAccountNames(accountNames);
+            projectCodesForDropDown = this.projectDbDao.getProjectCodesForSharedToken(sharedToken);
             if (projectCodesForDropDown == null || projectCodesForDropDown.isEmpty()) {
                 String eppn = (String) request.getAttribute("eppn");
-            	projectCodesForDropDown = this.projectDatabaseDao.getProjectCodesForEppn(eppn);
+            	projectCodesForDropDown = this.projectDbDao.getProjectCodesForEppn(eppn);
             }
         }
 
         categories.add("Affiliation");
         if (formData.getCategory().equals("Affiliation")) {
         	if (formData.getCategoryChoice().equals("All")) {
-                accountNames = this.auditDatabaseDao.getAccountNames("" + (from.getTimeInMillis() / 1000),
+                accountNames = this.auditDbDao.getAccountNames("" + (from.getTimeInMillis() / 1000),
                     "" + (to.getTimeInMillis() / 1000)).get();
         	} else {
                 accountNames = this.getAccountNamesForAffiliation(request, formData);
         	}
-            researcherList = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
+            researcherList = this.auditDbDao.getUsersForAccountNames(accountNames);
         }
-        fAffil = this.auditDatabaseDao.getAffiliations();
+        fAffil = this.auditDbDao.getAuditAffiliations();
         affiliations = fAffil.get();
         affiliations.add(0, "All");
         
@@ -127,18 +127,18 @@ public class StatisticsController {
 
         if (formData.getCategory().equals("Project")) {
             String projectCode = formData.getCategoryChoice().split(":")[0];
-            userstatslist = this.auditDatabaseDao.getStatisticsForProject(projectCode, from, to);
+            userstatslist = this.auditDbDao.getStatisticsForProject(projectCode, from, to);
             List<String> tmp = new LinkedList<String>();
             for (UserStatistics us : userstatslist) {
                 tmp.add(us.getUser());
             }
-            researcherList = this.auditDatabaseDao.getUsersForAccountNames(tmp);
-            fbdslist = auditDatabaseDao.getProjectStats(projectCode, formData.getFirstYear(), formData.getFirstMonth(),
+            researcherList = this.auditDbDao.getUsersForAccountNames(tmp);
+            fbdslist = auditDbDao.getProjectStats(projectCode, formData.getFirstYear(), formData.getFirstMonth(),
                     formData.getLastYear(), formData.getLastMonth());
         } else {
-            userstatslist = this.auditDatabaseDao.getStatisticsForAccountNames(accountNames, from, to);
+            userstatslist = this.auditDbDao.getStatisticsForAccountNames(accountNames, from, to);
             bdslist = new LinkedList<BarDiagramStatistics>();
-            fbdslist = this.auditDatabaseDao.getBarDiagramAccountNamesStatistics(accountNames, formData.getFirstYear(),
+            fbdslist = this.auditDbDao.getBarDiagramAccountNamesStatistics(accountNames, formData.getFirstYear(),
                     formData.getFirstMonth(), formData.getLastYear(), formData.getLastMonth());
         }
 
@@ -175,7 +175,7 @@ public class StatisticsController {
             to.set(formData.getLastYear(), formData.getLastMonth() + 1, 1, 0, 0, 0);
 
             // list of all user names
-            users.addAll(this.auditDatabaseDao.getAccountNames("" + (from.getTimeInMillis() / 1000),
+            users.addAll(this.auditDbDao.getAccountNames("" + (from.getTimeInMillis() / 1000),
                     "" + (to.getTimeInMillis() / 1000)).get());
         }
         return users;
@@ -193,15 +193,15 @@ public class StatisticsController {
         to.set(formData.getLastYear(), formData.getLastMonth() + 1, 1, 0, 0, 0);
         String affil = formData.getCategoryChoice();
         String[] subs = affil.split("/");
-        List<String> usersWithAtLeastOneJob = this.auditDatabaseDao.getAccountNames(
+        List<String> usersWithAtLeastOneJob = this.auditDbDao.getAccountNames(
                 "" + (from.getTimeInMillis() / 1000), "" + (to.getTimeInMillis() / 1000)).get();
 
         if (StringUtils.countMatches(affil, "/") == 1) {
-            fuserlist = this.auditDatabaseDao.getAccountNamesForAffiliation(subs[1].trim());
+            fuserlist = this.auditDbDao.getAccountNamesForAffiliation(subs[1].trim());
         } else if (StringUtils.countMatches(affil, "/") == 2) {
-            fuserlist = this.auditDatabaseDao.getAccountNamesForAffiliation(subs[1].trim(), subs[2].trim());
+            fuserlist = this.auditDbDao.getAccountNamesForAffiliation(subs[1].trim(), subs[2].trim());
         } else if (StringUtils.countMatches(affil, "/") == 3) {
-            fuserlist = this.auditDatabaseDao.getAccountNamesForAffiliation(subs[1].trim(), subs[2].trim(),
+            fuserlist = this.auditDbDao.getAccountNamesForAffiliation(subs[1].trim(), subs[2].trim(),
                     subs[3].trim());
         } else {
             throw new Exception("Unexpected affilation string: " + affil);
@@ -233,16 +233,16 @@ public class StatisticsController {
         l.add(0, u);
     }
 
-    public void setProjectDatabaseDao(
-            ProjectDatabaseDao projectDatabaseDao) {
+    public void setProjectDbDao(
+            ProjectDbDao projectDbDao) {
 
-        this.projectDatabaseDao = projectDatabaseDao;
+        this.projectDbDao = projectDbDao;
     }
 
-    public void setAuditDatabaseDao(
-            AuditDatabaseDao auditDatabaseDao) {
+    public void setAuditDbDao(
+            AuditDbDao auditDbDao) {
 
-        this.auditDatabaseDao = auditDatabaseDao;
+        this.auditDbDao = auditDbDao;
     }
 
     public void setHistoryFirstYear(

@@ -9,7 +9,7 @@ import nz.ac.auckland.cer.jobaudit.pojo.BarDiagramStatistics;
 import nz.ac.auckland.cer.jobaudit.pojo.User;
 import nz.ac.auckland.cer.jobaudit.pojo.UserStatistics;
 
-public interface AuditDatabaseDao {
+public interface AuditDbDao {
 
     public Future<User> getUser(
             String accountName) throws Exception;
@@ -35,7 +35,7 @@ public interface AuditDatabaseDao {
             String dept1,
             String dept2) throws Exception;
 
-    public Future<List<String>> getAffiliations() throws Exception;
+    public Future<List<String>> getAuditAffiliations() throws Exception;
 
     public Future<List<AuditRecord>> getRecords(
             String accountName,
