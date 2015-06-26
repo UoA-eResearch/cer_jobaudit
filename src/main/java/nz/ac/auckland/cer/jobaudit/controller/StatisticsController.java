@@ -99,6 +99,10 @@ public class StatisticsController {
             accountNames = projectDatabaseDao.getResearcherAccountNamesForSharedToken(sharedToken);
             researchersForDropDown = this.auditDatabaseDao.getUsersForAccountNames(accountNames);
             projectCodesForDropDown = this.projectDatabaseDao.getProjectCodesForSharedToken(sharedToken);
+            if (projectCodesForDropDown == null || projectCodesForDropDown.isEmpty()) {
+                String eppn = (String) request.getAttribute("eppn");
+            	projectCodesForDropDown = this.projectDatabaseDao.getProjectCodesForEppn(eppn);
+            }
         }
 
         categories.add("Affiliation");

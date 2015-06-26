@@ -43,6 +43,21 @@
        )
     ORDER BY projectCode
   </select>
+
+  <select id="getProjectCodesForEppn" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT
+    CONCAT_WS(": ", projectCode, IF(LENGTH(name)>60,CONCAT(SUBSTRING(name,1,80), "..."),name))
+    FROM project 
+    INNER JOIN researcher_project 
+    ON researcher_project.projectId = project.id AND 
+       researcher_project.researcherId = (
+         SELECT researcherId 
+         FROM researcher_properties 
+         WHERE propname='eppn' AND 
+               propvalue = #{eppn}
+       )
+    ORDER BY projectCode
+  </select>
 	
   <select id="getResearcherAccountNamesForSharedToken" parameterType="java.lang.String" resultType="java.lang.String">
     SELECT DISTINCT propvalue AS linuxUsername 

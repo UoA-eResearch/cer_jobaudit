@@ -31,6 +31,12 @@ public class IBatisProjectDatabaseDao extends SqlSessionDaoSupport implements Pr
         return getSqlSession().selectList("getProjectCodesForSharedToken", sharedToken);
     }
 
+    public List<String> getProjectCodesForEppn(
+            String eppn) throws Exception {
+
+        return getSqlSession().selectList("getProjectCodesForEppn", eppn);
+    }
+
     public List<String> getProjectCodes() throws Exception {
 
         return getSqlSession().selectList("getProjectCodes");

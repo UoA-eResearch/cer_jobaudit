@@ -13,6 +13,9 @@ public interface ProjectDatabaseDao {
     public List<String> getProjectCodesForSharedToken(
             String sharedToken) throws Exception;
 
+    public List<String> getProjectCodesForEppn(
+            String eppn) throws Exception;
+
     public List<String> getProjectCodes() throws Exception;
 
     public Boolean isCurrentUserAdviser(
