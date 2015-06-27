@@ -1,5 +1,5 @@
 --
--- Create cache tables for jobs that finished within the current month.
+-- Create cache tables for jobs that finished within the last month
 -- Creating indexes for the appropriate collumns speeds up queries
 --
 
@@ -16,7 +16,7 @@ AS
     IF(done>start, cores*(done-start-suspended)/3600,0) AS core_hours,
     IF(start>qtime,(start-qtime)/3600,0) AS waiting_time
   FROM audit
-  WHERE done>UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH));
+  WHERE done>=UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH) + INTERVAL 1 DAY);
 
 CREATE INDEX user_index ON audit_user(user);
 CREATE INDEX done_index ON audit_user(done);
@@ -41,8 +41,9 @@ AS
      account LIKE 'uoo%' OR
      account LIKE 'massey%' OR
      account LIKE 'landcare%') AND
-    done>UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH));
+    done>=UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH) + INTERVAL 1 DAY);
 
 CREATE INDEX user_index ON audit_project(user);
 CREATE INDEX done_index ON audit_project(done);
+
 
