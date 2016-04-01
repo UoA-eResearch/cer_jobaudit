@@ -282,17 +282,27 @@ public class AuditDbDaoImpl extends SqlSessionDaoSupport implements AuditDbDao {
             final String start,
             final String end) throws Exception {
 
+        String newMid = mid;
+        if (new Integer(bottom) > new Integer(mid)) {
+          newMid = bottom;
+        }
         List<UserStatistics> list = null;
         if (accountNames == null || accountNames.size() == 0) {
             list = new LinkedList<UserStatistics>();
         } else {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("bottom", bottom);
-            params.put("mid", mid);
+            params.put("mid", newMid);
             params.put("top", top);
             params.put("accountNames", accountNames);
             params.put("start", start);
             params.put("end", end);
+            log.info("bottom: " + bottom); 
+            log.info("mid: " + newMid); 
+            log.info("top: " + top); 
+            log.info("start: " + start); 
+            log.info("end: " + end); 
+            log.info("accountNames: " + accountNames); 
             list = getSqlSession().selectList("getStatisticsForAccountNamesLatest", params);
         }
         return list;
