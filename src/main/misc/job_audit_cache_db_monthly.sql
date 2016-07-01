@@ -1,13 +1,10 @@
 --
--- Create statistics cache tables for each user for each month in the past
--- Creating indexes for the appropriate collumns speeds up queries
+-- Add records for each user for the last month to the statistics cache tables
+-- Note: If this is run multiple times, the records will be added multiple times!
 --
 
-DROP TABLE IF EXISTS audit_user_prev;
-
-CREATE TABLE audit_user_prev
-AS
-  SELECT
+INSERT INTO audit_user_prev
+SELECT
     user AS user,
     count(*) AS jobs,
     SUM(cores) AS total_cores,
@@ -19,17 +16,14 @@ AS
     SUM(IF(jobtype='parallel',1,0)) AS parallel_jobs,
     TRUNCATE(SUM(IF(jobtype='serial' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS serial_core_hours,
     TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS parallel_core_hours
-  FROM audit 
-  WHERE done<UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH) + INTERVAL 1 DAY)
+  FROM audit
+  WHERE done<UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH) + INTERVAL 1 DAY) AND
+        done>=UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 2 MONTH) + INTERVAL 1 DAY)
   GROUP BY user, year, month;
 
-CREATE INDEX user_index ON audit_user_prev(user);
 
-DROP TABLE IF EXISTS audit_project_prev; 
-
-CREATE TABLE audit_project_prev
-AS
-  SELECT
+INSERT INTO audit_project_prev
+SELECT
     account AS project,
     user as user,
     COUNT(*) AS jobs,
@@ -44,6 +38,7 @@ AS
     TRUNCATE(SUM(IF(jobtype='parallel' AND done>start, cores*(done-start-suspended), 0))/3600,2) AS parallel_core_hours
   FROM audit
   WHERE done<UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 1 MONTH) + INTERVAL 1 DAY) AND
+        done>=UNIX_TIMESTAMP(LAST_DAY(NOW() - INTERVAL 2 MONTH) + INTERVAL 1 DAY) AND
     ( account LIKE 'nesi%' OR
       account LIKE 'uoa%' OR
       account LIKE 'uoo%' OR
@@ -52,5 +47,4 @@ AS
     )
   GROUP BY project, user, year, month;
 
-CREATE INDEX user_index ON audit_project_prev(user);
 
